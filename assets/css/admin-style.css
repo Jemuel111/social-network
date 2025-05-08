@@ -1,0 +1,437 @@
+/* Table styling from the design */
+.table-container {
+    width: 82vw;
+    max-height: 90vh;
+    background-color: #fff5;
+    backdrop-filter: blur(7px);
+    box-shadow: 0 .4rem .8rem #0005;
+    border-radius: .8rem;
+    overflow: hidden;
+    margin-bottom: 2rem;
+}
+
+.table-header {
+    width: 100%;
+    padding: 0.8rem 1rem;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    background-color: #fff4;
+}
+
+.table-header .input-group {
+    width: 35%;
+    height: 100%;
+    background-color: #fff5;
+    padding: 0 .8rem;
+    border-radius: 2rem;
+    display: flex;
+    justify-content: flex-start; /* Changed to flex-start */
+    align-items: center;
+    transition: .2s;
+    position: relative; /* Added for icon positioning */
+}
+
+.table-header .input-group:hover {
+    width: 45%;
+    background-color: #fff8;
+    box-shadow: 0 .1rem .4rem #0002;
+}
+
+.table-header .input-group i {
+    color: #555;
+    margin-right: 0.5rem;
+    position: absolute;
+    left: 1rem; /* Position icon properly */
+    z-index: 1;
+}
+
+.table-header .input-group input {
+    width: 100%;
+    padding: 0.5rem 0.5rem 0.5rem 2rem; /* Added left padding for icon */
+    background-color: transparent;
+    border: none;
+    outline: none;
+    position: relative;
+}
+
+/* Rest of your existing CSS remains the same */
+.table-body {
+    width: 95%;
+    max-height: calc(89% - 1.6rem);
+    background-color: #fffb;
+    margin: .8rem auto;
+    border-radius: .6rem;
+    overflow: auto;
+    overflow: overlay;
+}
+
+.table-body::-webkit-scrollbar {
+    width: 0.5rem;
+    height: 0.5rem;
+}
+
+.table-body::-webkit-scrollbar-thumb {
+    border-radius: .5rem;
+    background-color: #0004;
+    visibility: hidden;
+}
+
+.table-body:hover::-webkit-scrollbar-thumb {
+    visibility: visible;
+}
+
+.table-body table {
+    width: 100%;
+}
+
+.table-body td img {
+    width: 36px;
+    height: 36px;
+    margin-right: .5rem;
+    border-radius: 50%;
+    vertical-align: middle;
+}
+
+.table-body table,
+.table-body th,
+.table-body td {
+    border-collapse: collapse;
+    padding: 1rem;
+    text-align: left;
+}
+
+.table-body thead th {
+    position: sticky;
+    top: 0;
+    left: 0;
+    background-color: #d5d1defe;
+    cursor: pointer;
+    text-transform: capitalize;
+}
+
+.table-body tbody tr:nth-child(even) {
+    background-color: #0000000b;
+}
+
+.table-body tbody tr {
+    --delay: .1s;
+    transition: .5s ease-in-out var(--delay), background-color 0s;
+}
+
+.table-body tbody tr.hide {
+    opacity: 0;
+    transform: translateX(100%);
+}
+
+.table-body tbody tr:hover {
+    background-color: #fff6 !important;
+}
+
+.table-body tbody tr td,
+.table-body tbody tr td p,
+.table-body tbody tr td img {
+    transition: .2s ease-in-out;
+}
+
+.table-body tbody tr.hide td,
+.table-body tbody tr.hide td p {
+    padding: 0;
+    font: 0 / 0 sans-serif;
+    transition: .2s ease-in-out .5s;
+}
+
+.table-body tbody tr.hide td img {
+    width: 0;
+    height: 0;
+    transition: .2s ease-in-out .5s;
+}
+
+.status {
+    padding: .4rem 0;
+    border-radius: 2rem;
+    text-align: center;
+}
+
+.status.delivered {
+    background-color: #86e49d;
+    color: #006b21;
+}
+
+.status.cancelled {
+    background-color: #d893a3;
+    color: #b30021;
+}
+
+.status.pending {
+    background-color: #ebc474;
+}
+
+.status.shipped {
+    background-color: #6fcaea;
+}
+
+thead th span.icon-arrow {
+    display: inline-block;
+    width: 1.3rem;
+    height: 1.3rem;
+    border-radius: 50%;
+    border: 1.4px solid transparent;
+    text-align: center;
+    font-size: 1rem;
+    margin-left: .5rem;
+    transition: .2s ease-in-out;
+}
+
+thead th:hover span.icon-arrow {
+    border: 1.4px solid #6c00bd;
+}
+
+thead th:hover {
+    color: #6c00bd;
+}
+
+thead th.active span.icon-arrow {
+    background-color: #6c00bd;
+    color: #fff;
+}
+
+thead th.asc span.icon-arrow {
+    transform: rotate(180deg);
+}
+
+thead th.active,
+tbody td.active {
+    color: #6c00bd;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1000px) {
+    .table-body td:not(:first-of-type) {
+        min-width: 12.1rem;
+    }
+}
+
+/* Keep your existing styles */
+html,
+body {
+    min-height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: stretch;
+    background: url(images/html_table.jpg) center / cover;
+}
+
+.layout {
+    display: flex;
+    width: 100%;
+    min-height: 100vh;
+    align-items: stretch;
+}
+
+.sidebar {
+    width: 250px;
+    background-color: #343a40;
+    color: white;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.sidebar a {
+    color: white;
+    text-decoration: none;
+    padding: 10px;
+    display: block;
+    border-radius: 5px;
+    transition: background 0.3s;
+}
+
+.sidebar a:hover {
+    background-color: #495057;
+}
+h2{
+    margin: 20px;
+}
+.sidebar h3,
+.sidebar h5 {
+    text-align: center;
+}
+
+.content {
+    flex: 1;
+    padding: 20px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.content h3{
+    margin-top: 30px;
+    margin-bottom: 30px;
+}
+.dashboard-box {
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 5px;
+    padding: 20px;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.dashboard-box h5 {
+    margin: 0;
+}
+
+.logo-container {
+    margin-bottom: 20px;
+}
+
+.logo-img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+}
+
+.admin-profile {
+    margin-bottom: 10px;
+}
+
+.profile-img {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #fff;
+}
+
+/* Button adjustments for the new design */
+.btn-sm {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+    border-radius: 0.2rem;
+}
+
+.btn-warning {
+    background-color: #ebc474;
+    border-color: #ebc474;
+    color: #000;
+}
+
+.btn-danger {
+    background-color: #d893a3;
+    border-color: #d893a3;
+    color: #b30021;
+}
+
+.btn-warning:hover {
+    background-color: #e6b85e;
+    border-color: #e6b85e;
+}
+
+.btn-danger:hover {
+    background-color: #d47a90;
+    border-color: #d47a90;
+}
+/* Table container */
+.table-container {
+    width: 100%;
+    background-color: #fff5;
+    backdrop-filter: blur(7px);
+    border-radius: 0.8rem;
+    overflow: hidden;
+    margin-bottom: 2rem;
+}
+
+/* Profile images */
+.profile-pic {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 8px;
+    vertical-align: middle;
+}
+
+/* Content cells */
+td:nth-child(3) { /* Content preview */
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+td:nth-child(4) { /* Date */
+    white-space: nowrap;
+}
+
+/* Delete button */
+.delete-form {
+    display: inline;
+}
+
+.btn-sm {
+    padding: 0.2rem 0.4rem;
+    font-size: 0.8rem;
+}
+
+/* Dashboard Cards */
+/* Wider Dashboard Cards */
+.card {
+    padding: 1rem;
+    background-color: #fff;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    border-radius: 20px;
+    height: 100%;
+    width: 100%; /* Ensure card fills its container */
+    min-width: 300px; /* Set minimum width (adjust as needed) */
+    max-width: 400px; /* Set maximum width (adjust as needed) */
+    margin: 0 auto; /* Center cards if they don't fill row */
+  }
+  
+  /* Adjust the grid columns to allow more horizontal space */
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between; /* Better spacing */
+  }
+  
+  .col-md-4 {
+    flex: 0 0 32%; /* Slightly wider than 33.33% to reduce gap */
+    max-width: 32%;
+    padding: 0 0.5rem; /* Adjust padding as needed */
+  }
+  
+  /* For even wider cards (2 cards per row instead of 3) */
+  .wider-cards .col-md-4 {
+    flex: 0 0 48%; /* Nearly half width */
+    max-width: 48%;
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 992px) {
+    .col-md-4 {
+      flex: 0 0 48%; /* 2 cards per row on medium screens */
+      max-width: 48%;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .col-md-4 {
+      flex: 0 0 100%; /* 1 card per row on small screens */
+      max-width: 100%;
+      margin-bottom: 1.5rem;
+    }
+    .card {
+      min-width: 100%; /* Full width on mobile */
+      max-width: 100%;
+    }
+  }
