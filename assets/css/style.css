@@ -80,9 +80,13 @@
   }
 
   .brand-text {
-      color: white;
-      font-weight: 600;
-      letter-spacing: 0.5px;
+    font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      background: linear-gradient(90deg, #fff, #F187EA);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
       margin: 0;
   }
   .profile-container {
@@ -134,7 +138,6 @@
   }
   
   .card-footer {
-    background-color: var(--white);
     border-top: 1px solid var(--border-color);
     padding: 30px 15px;
   }
@@ -595,4 +598,82 @@
 
 .replies-container {
   margin-top: 8px;
+}
+
+/* Centered icons for mobile */
+.d-lg-none {
+    display: flex;
+    justify-content: center; /* Center the icons horizontally */
+    align-items: center; /* Align icons vertically */
+    gap: 20px; /* Add spacing between icons */
+    padding: 0; /* Remove extra padding */
+    margin: 0 auto; /* Center the entire container */
+    width: 100%; /* Ensure it spans the full width */
+}
+
+.navbar .nav-link {
+  padding: 10px 15px; /* Adjust padding for icons */
+  color: white;
+  font-size: 1.5rem;
+  text-align: center;
+}
+
+.navbar .nav-link i {
+  display: block;
+  margin: 0 auto;
+}
+
+
+/* Hide search bar on mobile */
+@media (max-width: 992px) {
+    .search-container {
+        display: none;
+    }
+    .navbar .container {
+      padding: 0; /* Remove container padding */
+  }
+  .navbar-brand {
+    display: flex;
+    align-items: center; /* Center align */
+    justify-content: center;
+    margin: 0 auto; /* Center the brand in the navbar */
+  }
+
+  .navbar-brand img {
+      max-height: 15px; /* Reduce logo size */
+      margin-right: 0; /* Remove extra spacing */
+  }
+
+  .navbar-brand .brand-text {
+      font-size: 2rem; /* Make brand text smaller */
+      margin-top: 5px; /* Add spacing between logo and text */
+  }
+
+  .navbar .container {
+      padding: 0; /* Remove extra padding around the navbar */
+  }
+  
+}
+
+/* Active icon styling */
+.navbar .nav-link.active {
+    position: relative;
+    color: var(--color-6);
+}
+
+.navbar .nav-link.active i {
+    color: var(--color-6);
+}
+
+/* Add an underline indicator for the active icon */
+.navbar .nav-link.active::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 30%;
+    height: 3px;
+    background-color: var(--color-6);
+    border-radius: 2px;
 }

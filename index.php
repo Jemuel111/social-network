@@ -736,7 +736,7 @@ while ($row = $result->fetch_assoc()) {
                                             <span>Share</span>
                                         </button>
                                     </div>
-                                    <div class="card-footer bg-white">
+                                    <div class="card-footer">
                                         <div class="comment-section" id="comments-<?php echo $post['post_id']; ?>">
                                             <?php if ($post['comment_count'] > 0): ?>
                                                 <div class="text-center mb-2">
