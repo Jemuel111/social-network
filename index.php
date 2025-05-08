@@ -206,6 +206,42 @@ while ($row = $result->fetch_assoc()) {
             gap: 20px;           /* Space between columns */
         }
         
+        /* Ensure the container takes the full height of the viewport */
+        .container-fluid {
+            height: 100vh; /* Full viewport height */
+            display: flex;
+        }
+
+        /* Make each column scrollable */
+        .scrollable-column {
+            height: 100%; /* Full height of the container */
+            overflow-y: auto; /* Enable vertical scrolling */
+            padding: 15px; /* Optional padding */
+        }
+
+        /* Middle column should be larger */
+        .col-md-6 {
+            flex: 2; /* Make the middle column twice as wide as the others */
+        }
+
+        .col-md-3 {
+            flex: 1; /* Left and right columns take equal smaller widths */
+        }
+
+        /* Optional: Hide scrollbar for a cleaner look */
+        .scrollable-column::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .scrollable-column::-webkit-scrollbar-thumb {
+            background-color: #ccc;
+            border-radius: 4px;
+        }
+
+        .scrollable-column::-webkit-scrollbar-thumb:hover {
+            background-color: #aaa;
+        }
+        
         /* Card Styles */
         .card {
             background: var(--card-bg);
@@ -575,6 +611,16 @@ while ($row = $result->fetch_assoc()) {
         .footer-link:hover {
             text-decoration: underline;
         }
+        /* Hide left and right columns on mobile */
+        @media (max-width: 768px) {
+            .col-md-3 {
+                display: none; /* Hide left and right columns */
+            }
+
+            .col-md-6 {
+                flex: 1; /* Make the middle column take the full width */
+            }
+        }
     </style>
 </head>
 <body>
@@ -594,7 +640,7 @@ while ($row = $result->fetch_assoc()) {
         <div class="container-fluid px-10 mx-0">
             <div class="row">
                 <!-- Left Column - Profile -->
-                <div class="col-lg-3">
+                <div class="col-md-3 scrollable-column">
                     <div class="sidebar">
                         <div class="card profile-card">
                             <div class="card-body">
@@ -624,7 +670,7 @@ while ($row = $result->fetch_assoc()) {
                 </div>
                 
                 <!-- Middle Column - Posts -->
-                <div class="col-lg-6">
+                <div class="col-md-6 scrollable-column">
                     <!-- Create Post -->
                     <div class="card">
                         <div class="card-body post-create">
@@ -714,7 +760,7 @@ while ($row = $result->fetch_assoc()) {
                 </div>
                 
                 <!-- Right Column - Friend Suggestions -->
-                <div class="col-lg-3">
+                <div class="col-md-3 scrollable-column">
                     <div class="sidebar">
                         <div class="card">
                             <div class="card-header">

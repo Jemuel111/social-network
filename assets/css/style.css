@@ -449,20 +449,6 @@
   width: 15em;
 }
 
-.search-button {
-  border: none;
-  background-color: transparent;
-  padding: 0.7rem 1rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-}
-
-.search-button i {
-  color: var(--white);
-  font-size: 1rem;
-}
 
 .search-container {
   position: relative;

@@ -70,9 +70,6 @@
             <form action="search.php" method="GET" class="search-container">
                 <div class="search">
                     <input class="form-control" type="search" name="q" placeholder="Search users..." aria-label="Search">
-                    <button class="search-button" type="submit">
-                        <i class="fas fa-search search-icon"></i>
-                    </button>
                 </div>
             </form>
 
