@@ -74,6 +74,8 @@ $friend_suggestions = [];
 while ($row = $result->fetch_assoc()) {
     $friend_suggestions[] = $row;
 }
+
+
 ?>
 <!DOCTYPE html>
 <html lang="en">

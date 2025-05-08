@@ -38,22 +38,32 @@
                         <?php endif; ?>
                     </a>
                 </li>
-                <li class="nav-item">
-                    <?php 
-                    // Count unread notifications
-                    $notif_query = "SELECT COUNT(*) as count FROM notifications WHERE user_id = ? AND is_read = 0";
-                    $stmt = $conn->prepare($notif_query);
-                    $stmt->bind_param("i", $_SESSION['user_id']);
-                    $stmt->execute();
-                    $result = $stmt->get_result();
-                    $unread_notif = $result->fetch_assoc()['count'];
-                    ?>
-                    <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'notifications.php' ? 'active' : ''; ?>" href="notifications.php">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="notificationsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         <i class="fas fa-bell"></i>
-                        <?php if($unread_notif > 0): ?>
-                            <span class="badge bg-danger"><?php echo $unread_notif; ?></span>
+                        <?php
+                        $stmt = $conn->prepare("SELECT COUNT(*) AS unread_count FROM notifications WHERE user_id = ? AND is_read = 0");
+                        $stmt->bind_param("i", $_SESSION['user_id']);
+                        $stmt->execute();
+                        $result = $stmt->get_result();
+                        $unread_count = $result->fetch_assoc()['unread_count'];
+                        ?>
+                        <?php if ($unread_count > 0): ?>
+                            <span class="badge bg-danger"><?php echo $unread_count; ?></span>
                         <?php endif; ?>
                     </a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationsDropdown">
+                        <?php
+                        $stmt = $conn->prepare("SELECT message, created_at FROM notifications WHERE user_id = ? ORDER BY created_at DESC LIMIT 5");
+                        $stmt->bind_param("i", $_SESSION['user_id']);
+                        $stmt->execute();
+                        $result = $stmt->get_result();
+                        while ($notif = $result->fetch_assoc()):
+                        ?>
+                            <li><a class="dropdown-item" href="#"><?php echo htmlspecialchars($notif['message']); ?></a></li>
+                        <?php endwhile; ?>
+                        <li><a class="dropdown-item text-center" href="notifications.php">View All</a></li>
+                    </ul>
                 </li>
             </ul>
 

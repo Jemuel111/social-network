@@ -1,4 +1,4 @@
-    <?php
+<?php
     require_once '../includes/config.php';
     require_once '../includes/db_connect.php';
     require_once '../includes/functions.php';
@@ -52,5 +52,19 @@
                 </tbody>
             </table>
         </div>
+
+        <?php
+        // Notify the post owner
+        $stmt = $conn->prepare("SELECT user_id FROM posts WHERE post_id = ?");
+        $stmt->bind_param("i", $post_id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $post_owner = $result->fetch_assoc()['user_id'];
+
+        $notification_message = "Your post was deleted by an admin.";
+        $stmt = $conn->prepare("INSERT INTO notifications (user_id, message) VALUES (?, ?)");
+        $stmt->bind_param("is", $post_owner, $notification_message);
+        $stmt->execute();
+        ?>
 
         <?php require_once '../includes/admin_footer.php'; // Include the common footer ?>

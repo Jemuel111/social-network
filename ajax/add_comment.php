@@ -24,6 +24,20 @@ $stmt = $conn->prepare("INSERT INTO comments (post_id, user_id, content) VALUES 
 $stmt->bind_param("iis", $post_id, $user_id, $content);
 
 if ($stmt->execute()) {
+    // Notify the post owner
+    $stmt = $conn->prepare("SELECT user_id FROM posts WHERE post_id = ?");
+    $stmt->bind_param("i", $post_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $post_owner = $result->fetch_assoc()['user_id'];
+
+    if ($post_owner != $user_id) { // Avoid notifying the commenter themselves
+        $notification_message = "Someone commented on your post.";
+        $stmt = $conn->prepare("INSERT INTO notifications (user_id, message) VALUES (?, ?)");
+        $stmt->bind_param("is", $post_owner, $notification_message);
+        $stmt->execute();
+    }
+
     echo json_encode(['status' => 'success', 'message' => 'Comment added successfully']);
 } else {
     echo json_encode(['status' => 'error', 'message' => 'Failed to add comment']);

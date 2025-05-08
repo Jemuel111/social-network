@@ -26,6 +26,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['friend_id'])) {
         $stmt = $conn->prepare("INSERT INTO friendships (user_id, friend_id, status) VALUES (?, ?, 'pending')");
         $stmt->bind_param("ii", $user_id, $friend_id);
         $stmt->execute();
+
+        // Notify the recipient
+        $notification_message = "You have a new friend request.";
+        $stmt = $conn->prepare("INSERT INTO notifications (user_id, message) VALUES (?, ?)");
+        $stmt->bind_param("is", $friend_id, $notification_message);
+        $stmt->execute();
     }
     
     header("Location: profile.php?id=$friend_id");

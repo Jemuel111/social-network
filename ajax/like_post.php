@@ -46,5 +46,20 @@ $result = $stmt->get_result();
 $row = $result->fetch_assoc();
 $likes = $row['count'];
 
+if ($liked) { // Notify only when the post is liked
+    $stmt = $conn->prepare("SELECT user_id FROM posts WHERE post_id = ?");
+    $stmt->bind_param("i", $post_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $post_owner = $result->fetch_assoc()['user_id'];
+
+    if ($post_owner != $user_id) { // Avoid notifying the liker themselves
+        $notification_message = "Someone liked your post.";
+        $stmt = $conn->prepare("INSERT INTO notifications (user_id, message) VALUES (?, ?)");
+        $stmt->bind_param("is", $post_owner, $notification_message);
+        $stmt->execute();
+    }
+}
+
 echo json_encode(['status' => 'success', 'likes' => $likes, 'liked' => $liked]);
 ?>
