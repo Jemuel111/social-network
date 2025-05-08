@@ -564,6 +564,15 @@ while ($row = $result->fetch_assoc()) {
         #post_image {
             display: none;
         }
+        .footer-link {
+            text-decoration: none;
+            color: white;
+            transition: text-decoration 0.2s ease-in-out;
+        }
+
+        .footer-link:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
@@ -738,9 +747,11 @@ while ($row = $result->fetch_assoc()) {
                             <div class="card-body text-center">
                                 <h6>Zyntra © <?php echo date('Y'); ?></h6>
                                 <small class="text-muted">
-                                <a href="legal-page.php">Privacy</a> • 
-                                <a href="legal-page.php">Terms</a> • 
-                                <a href="legal-page.php">Help</a>
+                                <a href="legal-page.php" class="footer-link">Privacy</a>
+                                <span style="color: white;">•</span>
+                                <a href="legal-page.php" class="footer-link">Terms</a>
+                                <span style="color: white;">•</span>
+                                <a href="legal-page.php" class="footer-link">Help</a>
                                 </small>
                             </div>
                         </div>
