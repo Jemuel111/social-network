@@ -106,35 +106,38 @@ if (isset($_GET['friend_id'])) {
         </div>
 
         <div class="col-md-8">
-            <?php if (isset($_GET['friend_id'])): ?>
-                <div class="card">
-                    <div class="card-header">
-                        Chatting with 
-                        <?php
-                        $friend_info = get_user_by_id($friend_id);
-                        echo htmlspecialchars($friend_info['full_name']);
-                        ?>
+            <?php if (isset($_GET['friend_id'])): 
+                $friend_id = intval($_GET['friend_id']);
+                $friend_info = get_user_by_id($friend_id);
+                
+                if (!$friend_info): ?>
+                    <div class="alert alert-danger">User not found.</div>
+                <?php else: ?>
+                    <div class="card">
+                        <div class="card-header">
+                            Chatting with <?php echo htmlspecialchars($friend_info['full_name']); ?>
+                        </div>
+                        <div class="card-body" id="chat-box" style="height:400px; overflow-y: scroll;">
+                            <?php foreach ($chat_messages as $msg): ?>
+                                <div class="mb-2 text-<?php echo $msg['sender_id'] == $user_id ? 'end' : 'start'; ?>">
+                                    <small class="text-muted"><?php echo format_date($msg['created_at']); ?></small><br>
+                                    <span class="badge <?php echo $msg['sender_id'] == $user_id ? 'bg-primary' : 'bg-secondary'; ?>">
+                                        <?php echo htmlspecialchars($msg['content']); ?>
+                                    </span>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                        <div class="card-footer">
+                            <form id="send-message-form" method="POST" action="send_message.php">
+                                <div class="input-group">
+                                    <input type="hidden" name="receiver_id" value="<?php echo $friend_id; ?>">
+                                    <input type="text" name="message" class="form-control" placeholder="Type your message..." required>
+                                    <button class="btn btn-primary" type="submit">Send</button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
-                    <div class="card-body" id="chat-box" style="height:400px; overflow-y: scroll;">
-                        <?php foreach ($chat_messages as $msg): ?>
-                            <div class="mb-2 text-<?php echo $msg['sender_id'] == $user_id ? 'end' : 'start'; ?>">
-                                <small class="text-muted"><?php echo format_date($msg['created_at']); ?></small><br>
-                                <span class="badge <?php echo $msg['sender_id'] == $user_id ? 'bg-primary' : 'bg-secondary'; ?>">
-                                    <?php echo htmlspecialchars($msg['content']); ?>
-                                </span>
-                            </div>
-                        <?php endforeach; ?>
-                    </div>
-                    <div class="card-footer">
-                        <form id="send-message-form" method="POST" action="send_message.php">
-                            <div class="input-group">
-                                <input type="hidden" name="receiver_id" value="<?php echo $friend_id; ?>">
-                                <input type="text" name="message" class="form-control" placeholder="Type your message..." required>
-                                <button class="btn btn-primary" type="submit">Send</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
+                <?php endif; ?>
             <?php else: ?>
                 <div class="alert alert-info">Select a friend to start chatting.</div>
             <?php endif; ?>

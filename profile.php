@@ -111,7 +111,7 @@ $friend_count = $stmt->get_result()->fetch_assoc()['total_friends'];
                             <button class="btn btn-success w-100 mb-2" disabled>Friends</button>
                         <?php endif; ?>
 
-                        <a href="send_message.php?id=<?php echo $profile_id; ?>" class="btn btn-outline-primary w-100">Send Message</a>
+                        <a href="messages.php?friend_id=<?php echo $profile_id; ?>" class="btn btn-outline-primary w-100">Send Message</a>
                     <?php endif; ?>
                 </div>
             </div>
