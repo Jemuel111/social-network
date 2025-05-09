@@ -54,7 +54,14 @@ if ($liked) { // Notify only when the post is liked
     $post_owner = $result->fetch_assoc()['user_id'];
 
     if ($post_owner != $user_id) { // Avoid notifying the liker themselves
-        $notification_message = "Someone liked your post.";
+        // Get the liker's full name
+        $stmt = $conn->prepare("SELECT full_name FROM users WHERE user_id = ?");
+        $stmt->bind_param("i", $user_id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $liker_name = $result->fetch_assoc()['full_name'];
+
+        $notification_message = $liker_name . " liked your post.";
         $stmt = $conn->prepare("INSERT INTO notifications (user_id, message) VALUES (?, ?)");
         $stmt->bind_param("is", $post_owner, $notification_message);
         $stmt->execute();

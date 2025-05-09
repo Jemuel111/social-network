@@ -27,8 +27,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['friend_id'])) {
         $stmt->bind_param("ii", $user_id, $friend_id);
         $stmt->execute();
 
+        // Get the sender's full name
+        $stmt = $conn->prepare("SELECT full_name FROM users WHERE user_id = ?");
+        $stmt->bind_param("i", $user_id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $sender_name = $result->fetch_assoc()['full_name'];
+
         // Notify the recipient
-        $notification_message = "You have a new friend request.";
+        $notification_message = $sender_name . " sent you a friend request.";
         $stmt = $conn->prepare("INSERT INTO notifications (user_id, message) VALUES (?, ?)");
         $stmt->bind_param("is", $friend_id, $notification_message);
         $stmt->execute();

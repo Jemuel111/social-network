@@ -28,6 +28,9 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
+
+    // Initialize notification system
+    initializeNotifications();
 });
 
 function likePost(postId, button) {
@@ -72,9 +75,9 @@ function loadComments(postId) {
                             <img src="assets/images/${comment.profile_pic}" class="rounded-circle me-2" width="32" alt="Profile">
                             <div>
                                 <strong>${comment.full_name}</strong>
-                                <small class="text-muted"> @${comment.username}</small>
+                                <small style="color: gray;"> @${comment.username}</small>
                                 <p class="mb-0">${comment.content}</p>
-                                <small class="text-muted">${comment.created_at}</small>
+                                <small style="color: gray;">${comment.created_at}</small>
                             </div>
                         </div>
                     </div>
@@ -110,4 +113,87 @@ function submitComment(postId, comment, inputElement) {
         }
     })
     .catch(error => console.error('Error:', error));
+}
+
+function initializeNotifications() {
+    const notificationDropdown = document.getElementById('notificationDropdown');
+    if (!notificationDropdown) return;
+
+    // Update notifications every 30 seconds
+    setInterval(updateNotifications, 30000);
+
+    // Update notifications when dropdown is shown
+    notificationDropdown.addEventListener('show.bs.dropdown', function() {
+        updateNotifications();
+    });
+
+    // Mark notifications as read when clicking on them
+    document.querySelectorAll('.notification-dropdown .dropdown-item').forEach(item => {
+        item.addEventListener('click', function() {
+            if (this.classList.contains('unread')) {
+                this.classList.remove('unread');
+                updateNotificationBadge();
+            }
+        });
+    });
+}
+
+function updateNotifications() {
+    fetch('ajax/get_notifications.php')
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                const notificationList = document.querySelector('.notification-list');
+                if (!notificationList) return;
+
+                if (data.notifications.length === 0) {
+                    notificationList.innerHTML = '<li><div class="dropdown-item text-muted">No notifications</div></li>';
+                } else {
+                    let html = '';
+                    data.notifications.forEach(notif => {
+                        html += `
+                            <li>
+                                <a class="dropdown-item ${notif.is_read ? '' : 'unread'}" href="notifications.php">
+                                    <div class="notification-content">
+                                        <div class="notification-text">${notif.message}</div>
+                                        <small class="text-muted">${notif.created_at}</small>
+                                    </div>
+                                </a>
+                            </li>
+                        `;
+                    });
+                    notificationList.innerHTML = html;
+                }
+
+                // Update notification badge
+                updateNotificationBadge(data.unread_count);
+            }
+        })
+        .catch(error => console.error('Error:', error));
+}
+
+function updateNotificationBadge(count) {
+    const badge = document.querySelector('#notificationDropdown .badge');
+    if (count === undefined) {
+        // If count is not provided, fetch it
+        fetch('ajax/get_unread_notifications_count.php')
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    updateBadgeVisibility(badge, data.count);
+                }
+            })
+            .catch(error => console.error('Error:', error));
+    } else {
+        updateBadgeVisibility(badge, count);
+    }
+}
+
+function updateBadgeVisibility(badge, count) {
+    if (count > 0) {
+        badge.textContent = count;
+        badge.style.display = 'block';
+    } else {
+        badge.style.display = 'none';
+    }
 }

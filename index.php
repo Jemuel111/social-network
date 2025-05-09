@@ -107,10 +107,8 @@ while ($row = $result->fetch_assoc()) {
         body {
             font-family: 'Poppins', sans-serif;
             background: var(--body-bg);
-            min-height: 100vh;
             color: white;
             position: relative;
-            overflow-x: hidden;
         }
         .custom-container{
             margin: 0 0 0 0;
@@ -193,53 +191,94 @@ while ($row = $result->fetch_assoc()) {
         }
         
         /* Main Content */
-        .main-container {
-            display: flex;
-            flex-direction: row;
-            justify-content: space-between;
-            align-items: flex-start;
-            width: 100vw;        /* Use the full width of the viewport */
-            height: 100vh;       /* Optional: full height */
-            overflow: hidden;
-            padding: 20px;       /* Adjust as needed */
-            box-sizing: border-box;
-            gap: 20px;           /* Space between columns */
+        .main-content {
+            width: 100%;
+            padding: 0;
+            margin-top: 0;
+            position: relative;
         }
-        
-        /* Ensure the container takes the full height of the viewport */
+
         .container-fluid {
-            height: 100vh; /* Full viewport height */
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 15px;
+            height: 100%;
+        }
+
+        .row {
+            margin: 0;
+            width: 100%;
             display: flex;
+            align-items: flex-start;
+            height: 100%;
         }
 
-        /* Make each column scrollable */
-        .scrollable-column {
-            height: 100%; /* Full height of the container */
-            overflow-y: auto; /* Enable vertical scrolling */
-            padding: 15px; /* Optional padding */
-        }
-
-        /* Middle column should be larger */
-        .col-md-6 {
-            flex: 2; /* Make the middle column twice as wide as the others */
+        /* Column Styles */
+        .col-md-3, .col-md-6 {
+            padding: 0 10px;
+            margin-top: 0;
+            height: 100%;
         }
 
         .col-md-3 {
-            flex: 1; /* Left and right columns take equal smaller widths */
+            width: 25%;
         }
 
-        /* Optional: Hide scrollbar for a cleaner look */
+        .col-md-6 {
+            width: 50%;
+        }
+
+        .scrollable-column {
+            /* height: calc(100vh - 76px); */
+            /* overflow-y: auto; */
+            padding: 10px;
+            padding-bottom: 20px; /* Add padding at bottom for better scrolling */
+        }
+
         .scrollable-column::-webkit-scrollbar {
             width: 8px;
         }
 
         .scrollable-column::-webkit-scrollbar-thumb {
-            background-color: #ccc;
+            background-color: rgba(255, 255, 255, 0.2);
             border-radius: 4px;
         }
 
         .scrollable-column::-webkit-scrollbar-thumb:hover {
-            background-color: #aaa;
+            background-color: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 991px) {
+            .container-fluid {
+                padding: 0 10px;
+            }
+
+            .col-md-3 {
+                width: 25%;
+                padding: 0 5px;
+            }
+
+            .col-md-6 {
+                width: 50%;
+                padding: 0 5px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                overflow-y: auto;
+            }
+
+            .main-content {
+                height: auto;
+                overflow: visible;
+            }
+
+            .scrollable-column {
+                height: auto;
+                overflow: visible;
+            }
         }
         
         /* Card Styles */
@@ -266,7 +305,10 @@ while ($row = $result->fetch_assoc()) {
             font-weight: 600;
             margin-bottom: 0.5rem;
         }
-        
+        .card-footer{
+            border-top: none;
+            padding: 0;
+        }
         /* Profile Section */
         .profile-card {
             text-align: center;
@@ -357,6 +399,9 @@ while ($row = $result->fetch_assoc()) {
         .post-input:focus {
             outline: none;
             border-color: var(--accent);
+        }
+        .post-input::placeholder {
+            color: var(--lighter);
         }
         
         .post-actions {
@@ -577,11 +622,16 @@ while ($row = $result->fetch_assoc()) {
         .btn-primary {
             background: linear-gradient(90deg, var(--primary), var(--accent));
             border: none;
+            border-radius: 8px;
+            color: white;
+            padding: 0.5rem 1.5rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
         }
         
         .btn-primary:hover {
-            background: linear-gradient(90deg, var(--primary), var(--accent));
-            opacity: 0.9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(241, 135, 234, 0.3);
         }
         
         .custom-file-upload {
@@ -621,6 +671,72 @@ while ($row = $result->fetch_assoc()) {
                 flex: 1; /* Make the middle column take the full width */
             }
         }
+
+        /* Add these styles to your existing CSS */
+        .search-container {
+            position: relative;
+        }
+
+        .search-results-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: var(--card-bg);
+            border: 1px solid #3C3273;
+            border-radius: 10px;
+            margin-top: 5px;
+            max-height: 300px;
+            overflow-y: auto;
+            display: none;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .search-result-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 15px;
+            border-bottom: 1px solid #3C3273;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .search-result-item:last-child {
+            border-bottom: none;
+        }
+
+        .search-result-item:hover {
+            background-color: var(--hover-bg);
+        }
+
+        .search-result-item img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 10px;
+            border: 2px solid var(--accent);
+        }
+
+        .search-result-info {
+            flex: 1;
+        }
+
+        .search-result-name {
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .search-result-username {
+            font-size: 0.85rem;
+            color: var(--accent);
+        }
+
+        .no-results {
+            padding: 15px;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.7);
+        }
     </style>
 </head>
 <body>
@@ -648,22 +764,52 @@ while ($row = $result->fetch_assoc()) {
                                 <h5 class="profile-name"><?php echo $user['full_name']; ?></h5>
                                 <p class="profile-username">@<?php echo $user['username']; ?></p>
                                 
-                                <a href="profile.php" class="menu-item">
-                                    <i class="bi bi-person"></i>
-                                    <span>My Profile</span>
-                                </a>
-                                <a href="friends.php" class="menu-item">
-                                    <i class="bi bi-people"></i>
-                                    <span>Friends</span>
-                                </a>
-                                <a href="messages.php" class="menu-item">
-                                    <i class="bi bi-chat-dots"></i>
-                                    <span>Messages</span>
-                                </a>
-                                <a href="notifications.php" class="menu-item">
-                                    <i class="bi bi-bell"></i>
-                                    <span>Notifications</span>
-                                </a>
+                                <?php
+                                // Get friends count
+                                $stmt = $conn->prepare("
+                                    SELECT COUNT(*) as friend_count 
+                                    FROM friendships 
+                                    WHERE (user_id = ? OR friend_id = ?) 
+                                    AND status = 'accepted'
+                                ");
+                                $stmt->bind_param("ii", $user_id, $user_id);
+                                $stmt->execute();
+                                $friend_count = $stmt->get_result()->fetch_assoc()['friend_count'];
+
+                                // Get posts count
+                                $stmt = $conn->prepare("SELECT COUNT(*) as post_count FROM posts WHERE user_id = ?");
+                                $stmt->bind_param("i", $user_id);
+                                $stmt->execute();
+                                $post_count = $stmt->get_result()->fetch_assoc()['post_count'];
+
+                                // Get total likes received
+                                $stmt = $conn->prepare("
+                                    SELECT COUNT(*) as like_count 
+                                    FROM likes l 
+                                    JOIN posts p ON l.post_id = p.post_id 
+                                    WHERE p.user_id = ?
+                                ");
+                                $stmt->bind_param("i", $user_id);
+                                $stmt->execute();
+                                $like_count = $stmt->get_result()->fetch_assoc()['like_count'];
+                                ?>
+
+                                <div class="profile-stats">
+                                    <div class="stat-item">
+                                        <div class="stat-value"><?php echo $friend_count; ?></div>
+                                        <div class="stat-label">Friends</div>
+                                    </div>
+                                    <div class="stat-item">
+                                        <div class="stat-value"><?php echo $post_count; ?></div>
+                                        <div class="stat-label">Posts</div>
+                                    </div>
+                                    <div class="stat-item">
+                                        <div class="stat-value"><?php echo $like_count; ?></div>
+                                        <div class="stat-label">Likes</div>
+                                    </div>
+                                </div>
+
+                                <a href="profile.php" class="btn btn-primary w-100 mt-3">View Profile</a>
                             </div>
                         </div>
                     </div>
@@ -697,9 +843,9 @@ while ($row = $result->fetch_assoc()) {
                     <?php if (empty($posts)): ?>
                         <div class="card">
                             <div class="card-body text-center py-5">
-                                <i class="bi bi-newspaper fa-3x mb-3 text-muted"></i>
+                                <i class="bi bi-newspaper fa-3x mb-3 text-white"></i>
                                 <h5>No Posts Yet</h5>
-                                <p class="text-muted">Create your first post or add friends to see their posts here!</p>
+                                <p class="text-white">Create your first post or add friends to see their posts here!</p>
                             </div>
                         </div>
                     <?php else: ?>
@@ -724,7 +870,7 @@ while ($row = $result->fetch_assoc()) {
                                     </div>
                                     <div class="post-footer">
                                         <button class="post-action <?php echo has_user_liked_post($user_id, $post['post_id']) ? 'text-primary' : ''; ?> like-btn" data-post-id="<?php echo $post['post_id']; ?>">
-                                            <i class="<?php echo has_user_liked_post($user_id, $post['post_id']) ? 'fas' : 'far'; ?> fa-thumbs-up"></i>
+                                            <i class="<?php echo has_user_liked_post($user_id, $post['post_id']) ? 'fa-solid' : 'fa-regular'; ?> fa-heart"></i>
                                             <span class="like-count"><?php echo $post['like_count']; ?></span>
                                         </button>
                                         <button class="post-action comment-btn" data-post-id="<?php echo $post['post_id']; ?>">
@@ -749,7 +895,7 @@ while ($row = $result->fetch_assoc()) {
                                         <form class="comment-form mt-3" data-post-id="<?php echo $post['post_id']; ?>">
                                             <div class="input-group">
                                                 <input type="text" class="form-control comment-input" placeholder="Write a comment..." required>
-                                                <button class="btn btn-outline-primary" type="submit"><i class="fas fa-paper-plane"></i></button>
+                                                <button class="btn btn-outline" type="submit"><i class="fas fa-paper-plane"></i></button>
                                             </div>
                                         </form>
                                     </div>
@@ -769,7 +915,7 @@ while ($row = $result->fetch_assoc()) {
                             <div class="card-body">
                                 <?php if (empty($friend_suggestions)): ?>
                                     <div class="text-center py-3">
-                                        <p class="text-muted mb-0">No suggestions at the moment</p>
+                                        <p class="text-white mb-0">No suggestions at the moment</p>
                                     </div>
                                 <?php else: ?>
                                     <?php foreach ($friend_suggestions as $suggestion): ?>
@@ -794,7 +940,7 @@ while ($row = $result->fetch_assoc()) {
                         <div class="card">
                             <div class="card-body text-center">
                                 <h6>Zyntra © <?php echo date('Y'); ?></h6>
-                                <small class="text-muted">
+                                <small class="text-white">
                                 <a href="legal-page.php" class="footer-link">Privacy</a>
                                 <span style="color: white;">•</span>
                                 <a href="legal-page.php" class="footer-link">Terms</a>
@@ -852,6 +998,62 @@ while ($row = $result->fetch_assoc()) {
                     this.innerHTML = '<i class="bi bi-check"></i>';
                     this.style.background = 'var(--accent)';
                     this.style.borderColor = 'var(--accent)';
+                }
+            });
+        });
+
+        // Add this to your existing JavaScript
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('searchInput');
+            const searchResults = document.getElementById('searchResults');
+            let searchTimeout;
+
+            searchInput.addEventListener('input', function() {
+                clearTimeout(searchTimeout);
+                const query = this.value.trim();
+
+                if (query.length < 2) {
+                    searchResults.style.display = 'none';
+                    return;
+                }
+
+                searchTimeout = setTimeout(() => {
+                    fetch(`ajax/search_users.php?q=${encodeURIComponent(query)}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.users.length > 0) {
+                                searchResults.innerHTML = data.users.map(user => `
+                                    <a href="profile.php?id=${user.user_id}" class="search-result-item">
+                                        <img src="assets/images/${user.profile_pic}" alt="${user.full_name}">
+                                        <div class="search-result-info">
+                                            <div class="search-result-name">${user.full_name}</div>
+                                            <div class="search-result-username">@${user.username}</div>
+                                        </div>
+                                    </a>
+                                `).join('');
+                                searchResults.style.display = 'block';
+                            } else {
+                                searchResults.innerHTML = '<div class="no-results">No users found</div>';
+                                searchResults.style.display = 'block';
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                        });
+                }, 300);
+            });
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
+                    searchResults.style.display = 'none';
+                }
+            });
+
+            // Handle keyboard navigation
+            searchInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    searchResults.style.display = 'none';
                 }
             });
         });

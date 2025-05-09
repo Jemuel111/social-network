@@ -32,7 +32,14 @@ if ($stmt->execute()) {
     $post_owner = $result->fetch_assoc()['user_id'];
 
     if ($post_owner != $user_id) { // Avoid notifying the commenter themselves
-        $notification_message = "Someone commented on your post.";
+        // Get the commenter's full name
+        $stmt = $conn->prepare("SELECT full_name FROM users WHERE user_id = ?");
+        $stmt->bind_param("i", $user_id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $commenter_name = $result->fetch_assoc()['full_name'];
+
+        $notification_message = $commenter_name . " commented on your post.";
         $stmt = $conn->prepare("INSERT INTO notifications (user_id, message) VALUES (?, ?)");
         $stmt->bind_param("is", $post_owner, $notification_message);
         $stmt->execute();
