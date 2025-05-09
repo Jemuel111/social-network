@@ -962,7 +962,7 @@ while ($row = $result->fetch_assoc()) {
                                             <?php if ($post['comment_count'] > 0): ?>
                                                 <div class="text-center mb-2">
                                                     <button class="btn btn-sm btn-link load-comments" data-post-id="<?php echo $post['post_id']; ?>">
-                                                        <i class="fa-solid fa-arrow-down"></i>
+                                                        <i class="fa-solid fa-caret-down"></i>
                                                     </button>
                                                 </div>
                                             <?php endif; ?>
