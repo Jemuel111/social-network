@@ -6,6 +6,12 @@ require_once 'includes/functions.php';
 // Redirect if not logged in
 require_login();
 
+// Redirect admin users to admin panel
+if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') {
+    header("Location: admin/admin_panel.php");
+    exit;
+}
+
 $user_id = $_SESSION['user_id'];
 $user = get_user_by_id($user_id);
 
@@ -58,6 +64,7 @@ $posts = get_feed_posts($user_id);
 // Get friend suggestions
 $query = "SELECT u.* FROM users u 
           WHERE u.user_id != ? 
+          AND u.role != 'admin'
           AND u.user_id NOT IN (
               SELECT friend_id FROM friendships 
               WHERE user_id = ? AND status = 'accepted'
@@ -65,7 +72,8 @@ $query = "SELECT u.* FROM users u
               SELECT user_id FROM friendships 
               WHERE friend_id = ? AND status = 'accepted'
           )
-          LIMIT 5";
+          ORDER BY RAND()
+          LIMIT 4";
 $stmt = $conn->prepare($query);
 $stmt->bind_param("iii", $user_id, $user_id, $user_id);
 $stmt->execute();
@@ -546,8 +554,7 @@ while ($row = $result->fetch_assoc()) {
         .friend-avatar {
             width: 50px;
             height: 50px;
-            border-radius: 50%;
-            margin-right: 0.75rem;
+            border-radius: 35%;
         }
         
         .friend-info {
@@ -578,6 +585,7 @@ while ($row = $result->fetch_assoc()) {
             background: var(--accent);
             border-color: var(--accent);
         }
+        
         /* Responsive */
         @media (max-width: 991px) {
             .sidebar {
@@ -812,6 +820,38 @@ while ($row = $result->fetch_assoc()) {
                                 <a href="profile.php" class="btn btn-primary w-100 mt-3">View Profile</a>
                             </div>
                         </div>
+
+                        <!-- Friends Card -->
+                        <div class="friends-card">
+                            <div class="friends-card-header">
+                                <h2>Friends <span class="friends-count"><?php echo $friend_count; ?><i class="bi bi-people" style="padding-left: 5px;"></i></span></h2>
+                            </div>
+                            <div class="friends-grid">
+                                <?php
+                                // Fetch friends for the current user
+                                $friends_query = "SELECT u.*, f.status 
+                                                FROM users u 
+                                                JOIN friendships f ON (f.user_id = u.user_id OR f.friend_id = u.user_id)
+                                                WHERE (f.user_id = ? OR f.friend_id = ?) 
+                                                AND f.status = 'accepted'
+                                                AND u.user_id != ?
+                                                LIMIT 4";
+                                $stmt = $conn->prepare($friends_query);
+                                $stmt->bind_param("iii", $user_id, $user_id, $user_id);
+                                $stmt->execute();
+                                $friends_result = $stmt->get_result();
+
+                                while ($friend = $friends_result->fetch_assoc()) {
+                                    $friend_image = $friend['profile_pic'] ?: 'assets/images/default-avatar.png';
+                                    ?>
+                                    <a href="profile.php?id=<?php echo $friend['user_id']; ?>" class="friend-item" style="text-decoration:none; color:inherit;">
+                                        <img src="assets/images/<?php echo $friend_image; ?>" alt="<?php echo $friend['username']; ?>" class="friend-avatar">
+                                        <h3 class="friend-name"><?php echo $friend['username']; ?></h3>
+                                    </a>
+                                <?php } ?>
+                            </div>
+                            <a href="friends.php" class="view-all-friends">View All Friends</a>
+                        </div>
                     </div>
                 </div>
                 
@@ -918,19 +958,18 @@ while ($row = $result->fetch_assoc()) {
                                         <p class="text-white mb-0">No suggestions at the moment</p>
                                     </div>
                                 <?php else: ?>
-                                    <?php foreach ($friend_suggestions as $suggestion): ?>
-                                        <div class="friend-item">
+                                    <div class="friends-suggestion-grid">
+                                    <?php foreach (array_slice($friend_suggestions, 0, 4) as $suggestion): ?>
+                                        <a href="profile.php?id=<?php echo $suggestion['user_id']; ?>" class="friend-item" style="text-decoration:none; color:inherit;">
                                             <img src="assets/images/<?php echo $suggestion['profile_pic']; ?>" alt="Friend" class="friend-avatar">
-                                            <div class="friend-info">
-                                                <h6 class="friend-name"><?php echo $suggestion['full_name']; ?></h6>
-                                                <p class="friend-mutual">@<?php echo $suggestion['username']; ?></p>
-                                            </div>
-                                            <form method="POST" action="add_friend.php">
+                                            <h3 class="friend-name"><?php echo $suggestion['username']; ?></h3>
+                                            <form method="POST" action="add_friend.php" style="margin-top: 0.5rem;">
                                                 <input type="hidden" name="friend_id" value="<?php echo $suggestion['user_id']; ?>">
-                                                <button type="submit" class="friend-add"><i class="bi bi-person-plus"></i></button>
+                                                <button type="submit" class="friend-add" title="Add Friend"><i class="bi bi-person-plus"></i></button>
                                             </form>
-                                        </div>
+                                        </a>
                                     <?php endforeach; ?>
+                                    </div>
                                 <?php endif; ?>
                                 <div class="text-center mt-2">
                                     <a href="friends.php" style="color: var(--accent); text-decoration: none;">See More</a>

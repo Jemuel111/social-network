@@ -37,7 +37,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if ($role === 'admin') {
             $stmt = $conn->prepare("SELECT user_id, username, password FROM users WHERE username = ? AND role = 'admin'");
         } else {
-            $stmt = $conn->prepare("SELECT user_id, username, password FROM users WHERE username = ?");
+            $stmt = $conn->prepare("SELECT user_id, username, password FROM users WHERE username = ? AND role != 'admin'");
         }
         
         $stmt->bind_param("s", $username);

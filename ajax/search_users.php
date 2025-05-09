@@ -22,10 +22,12 @@ $search_query = "%$query%";
 $stmt = $conn->prepare("
     SELECT user_id, username, full_name, profile_pic 
     FROM users 
-    WHERE username LIKE ? OR full_name LIKE ?
+    WHERE (username LIKE ? OR full_name LIKE ?)
+    AND user_id != ?
+    AND role != 'admin'
     LIMIT 5
 ");
-$stmt->bind_param("ss", $search_query, $search_query);
+$stmt->bind_param("ssi", $search_query, $search_query, $_SESSION['user_id']);
 $stmt->execute();
 $result = $stmt->get_result();
 

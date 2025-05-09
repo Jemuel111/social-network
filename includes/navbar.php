@@ -111,7 +111,7 @@
                 $user_pic = $result->fetch_assoc()['profile_pic'];
                 ?>
                 <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                    <img src="assets/images/<?php echo $user_pic; ?>" class="rounded-circle me-2" width="30" height="30" alt="Profile">
+                    <img src="assets/images/<?php echo $user_pic; ?>" class="rounded-circle me-2" width="40" height="40" alt="Profile">
                     <span class="d-none d-sm-inline"><?php echo $_SESSION['username']; ?></span>
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">

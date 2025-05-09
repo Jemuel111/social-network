@@ -13,12 +13,18 @@ if (isset($_GET['search'])) {
 
     $stmt = $conn->prepare("
         SELECT u.* FROM users u
-        INNER JOIN friendships f ON (f.friend_id = u.user_id OR f.user_id = u.user_id)
-        WHERE f.status = 'accepted'
-          AND (u.full_name LIKE CONCAT('%', ?, '%') OR u.username LIKE CONCAT('%', ?, '%'))
-          AND (f.user_id = ? OR f.friend_id = ?)
-          AND u.user_id != ?
+        WHERE (u.full_name LIKE CONCAT('%', ?, '%') OR u.username LIKE CONCAT('%', ?, '%'))
+        AND u.user_id != ?
+        AND u.role != 'admin'
+        AND u.user_id NOT IN (
+            SELECT friend_id FROM friendships 
+            WHERE user_id = ? AND status = 'accepted'
+            UNION
+            SELECT user_id FROM friendships 
+            WHERE friend_id = ? AND status = 'accepted'
+        )
         GROUP BY u.user_id
+        LIMIT 10
     ");
     $stmt->bind_param("ssiii", $search, $search, $_SESSION['user_id'], $_SESSION['user_id'], $_SESSION['user_id']);
     $stmt->execute();
