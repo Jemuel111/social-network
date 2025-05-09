@@ -892,22 +892,57 @@ while ($row = $result->fetch_assoc()) {
                         <?php foreach ($posts as $post): ?>
                             <div class="card post">
                                 <div class="card-body">
-                                    <div class="post-header">
-                                        <img src="assets/images/<?php echo $post['profile_pic']; ?>" alt="User" class="post-avatar">
-                                        <div class="post-user">
-                                            <h6 class="post-username"><?php echo $post['full_name']; ?></h6>
-                                            <p class="post-time">@<?php echo $post['username']; ?> · <?php echo format_date($post['created_at']); ?></p>
+                                    <?php if (!empty($post['shared_post_id'])): // This is a shared post ?>
+                                        <?php
+                                        // Fetch the original post and user
+                                        $orig_stmt = $conn->prepare("SELECT p.*, u.username, u.full_name, u.profile_pic FROM posts p JOIN users u ON p.user_id = u.user_id WHERE p.post_id = ?");
+                                        $orig_stmt->bind_param("i", $post['shared_post_id']);
+                                        $orig_stmt->execute();
+                                        $orig_result = $orig_stmt->get_result();
+                                        $original = $orig_result->fetch_assoc();
+                                        ?>
+                                        <div class="post-header">
+                                            <img src="assets/images/<?php echo $post['profile_pic']; ?>" alt="Sharer" class="post-avatar">
+                                            <div class="post-user">
+                                                <h6 class="post-username"><?php echo $post['full_name']; ?> <span style='font-weight:400;color:#F187EA;'>shared</span> <?php echo $original ? $original['full_name'] : '[Deleted]'; ?>'s post</h6>
+                                                <p class="post-time">@<?php echo $post['username']; ?> · <?php echo format_date($post['created_at']); ?></p>
+                                            </div>
+                                            <button class="post-menu">
+                                                <i class="bi bi-three-dots"></i>
+                                            </button>
                                         </div>
-                                        <button class="post-menu">
-                                            <i class="bi bi-three-dots"></i>
-                                        </button>
-                                    </div>
-                                    <div class="post-content">
-                                        <p><?php echo nl2br(htmlspecialchars($post['content'])); ?></p>
-                                        <?php if ($post['image']): ?>
-                                            <img src="assets/uploads/<?php echo $post['image']; ?>" alt="Post image" class="post-image">
-                                        <?php endif; ?>
-                                    </div>
+                                        <div class="post-content" style="background:rgba(255,255,255,0.05);border-radius:10px;padding:10px;">
+                                            <?php if ($original): ?>
+                                                <div class="d-flex align-items-center mb-2">
+                                                    <img src="assets/images/<?php echo $original['profile_pic']; ?>" alt="Original User" class="post-avatar" style="width:32px;height:32px;margin-right:8px;">
+                                                    <strong><?php echo $original['full_name']; ?></strong> <span style="color:#F187EA;">@<?php echo $original['username']; ?></span>
+                                                </div>
+                                                <p><?php echo nl2br(htmlspecialchars($original['content'])); ?></p>
+                                                <?php if ($original['image']): ?>
+                                                    <img src="assets/uploads/<?php echo $original['image']; ?>" alt="Post image" class="post-image">
+                                                <?php endif; ?>
+                                            <?php else: ?>
+                                                <p class="text-muted">[Original post deleted]</p>
+                                            <?php endif; ?>
+                                        </div>
+                                    <?php else: // Normal post ?>
+                                        <div class="post-header">
+                                            <img src="assets/images/<?php echo $post['profile_pic']; ?>" alt="User" class="post-avatar">
+                                            <div class="post-user">
+                                                <h6 class="post-username"><?php echo $post['full_name']; ?></h6>
+                                                <p class="post-time">@<?php echo $post['username']; ?> · <?php echo format_date($post['created_at']); ?></p>
+                                            </div>
+                                            <button class="post-menu">
+                                                <i class="bi bi-three-dots"></i>
+                                            </button>
+                                        </div>
+                                        <div class="post-content">
+                                            <p><?php echo nl2br(htmlspecialchars($post['content'])); ?></p>
+                                            <?php if ($post['image']): ?>
+                                                <img src="assets/uploads/<?php echo $post['image']; ?>" alt="Post image" class="post-image">
+                                            <?php endif; ?>
+                                        </div>
+                                    <?php endif; ?>
                                     <div class="post-footer">
                                         <button class="post-action <?php echo has_user_liked_post($user_id, $post['post_id']) ? 'text-primary' : ''; ?> like-btn" data-post-id="<?php echo $post['post_id']; ?>">
                                             <i class="<?php echo has_user_liked_post($user_id, $post['post_id']) ? 'fa-solid' : 'fa-regular'; ?> fa-heart"></i>
@@ -917,9 +952,9 @@ while ($row = $result->fetch_assoc()) {
                                             <i class="far fa-comment"></i>
                                             <span class="comment-count"><?php echo $post['comment_count']; ?></span>
                                         </button>
-                                        <button class="post-action">
-                                            <i class="far fa-share-square"></i>
-                                            <span>Share</span>
+                                        <button class="share-btn <?php echo has_user_shared_post($_SESSION['user_id'], $post['post_id']) ? 'shared' : ''; ?>" data-post-id="<?php echo $post['post_id']; ?>">
+                                            <i class="fas fa-share"></i>
+                                            <span class="share-count"><?php echo $post['share_count']; ?></span>
                                         </button>
                                     </div>
                                     <div class="card-footer">

@@ -30,7 +30,14 @@ $active_users = count(array_filter($users, function($user) {
 
 
 <div class="content">
-    <h2>Admin Panel</h2>
+    <!-- Background Elements -->
+    <div class="background-container">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+        <div class="grid-bg"></div>
+    </div>
+    <h3>Admin Panel</h3>
     <div class="row">
         <div class="col-md-4">
             <div class="card">
@@ -107,11 +114,10 @@ $active_users = count(array_filter($users, function($user) {
                         <tr>
                             <td><?php echo htmlspecialchars($user['user_id']); ?></td>
                             <td>
-                                <?php if (!empty($user['profile_pic'])): ?>
-                                    <img src="<?php echo htmlspecialchars($user['profile_pic']); ?>" alt="Profile">
-                                <?php else: ?>
-                                    <i class="fas fa-user-circle" style="font-size: 36px; color: #555;"></i>
-                                <?php endif; ?>
+                                <?php 
+                                $profile_pic = !empty($user['profile_pic']) ? $user['profile_pic'] : 'default.jpg';
+                                ?>
+                                <img src="../assets/images/<?php echo htmlspecialchars($profile_pic); ?>" alt="Profile" class="profile-pic">
                                 <?php echo htmlspecialchars($user['full_name']); ?>
                             </td>
                             <td><?php echo htmlspecialchars($user['username']); ?></td>
@@ -175,15 +181,18 @@ $active_users = count(array_filter($users, function($user) {
                         <tr class="post-row">
                             <td><?php echo htmlspecialchars($post['post_id']); ?></td>
                             <td>
-                                <?php if (!empty($post['profile_pic'])): ?>
-                                    <img src="<?php echo htmlspecialchars($post['profile_pic']); ?>" class="profile-pic">
-                                <?php endif; ?>
-                                <?php echo htmlspecialchars($post['username']); ?>
+                                <div class="author-cell">
+                                    <?php 
+                                    $profile_pic = !empty($post['profile_pic']) ? $post['profile_pic'] : 'default.jpg';
+                                    ?>
+                                    <img src="../assets/images/<?php echo htmlspecialchars($profile_pic); ?>" alt="Profile" class="profile-pic">
+                                    <span class="username"><?php echo htmlspecialchars($post['username']); ?></span>
+                                </div>
                             </td>
-                            <td><?php echo htmlspecialchars(shortenText($post['content'], 60)); ?></td>
+                            <td class="content-cell"><?php echo htmlspecialchars(shortenText($post['content'], 60)); ?></td>
                             <td><?php echo date('n/j/y', strtotime($post['created_at'])); ?></td>
                             <td>
-                                <form method="POST" action="delete_post.php">
+                                <form method="POST" action="delete_post.php" class="delete-form">
                                     <input type="hidden" name="post_id" value="<?php echo $post['post_id']; ?>">
                                     <button type="submit" class="btn btn-danger btn-sm">
                                         <i class="fas fa-trash"></i>

@@ -29,6 +29,14 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
+    // Share post functionality
+    document.querySelectorAll('.share-btn').forEach(function(button) {
+        button.addEventListener('click', function() {
+            const postId = this.getAttribute('data-post-id');
+            sharePost(postId, this);
+        });
+    });
+
     // Initialize notification system
     initializeNotifications();
 });
@@ -110,6 +118,32 @@ function submitComment(postId, comment, inputElement) {
             
             // Load the comments
             loadComments(postId);
+        }
+    })
+    .catch(error => console.error('Error:', error));
+}
+
+function sharePost(postId, button) {
+    fetch('ajax/share_post.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: 'post_id=' + postId
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            const countElement = button.querySelector('.share-count');
+            countElement.textContent = data.shares;
+            
+            if (data.shared) {
+                button.classList.remove('btn-outline-primary');
+                button.classList.add('btn-primary');
+            } else {
+                button.classList.remove('btn-primary');
+                button.classList.add('btn-outline-primary');
+            }
         }
     })
     .catch(error => console.error('Error:', error));

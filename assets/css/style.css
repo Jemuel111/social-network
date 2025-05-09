@@ -1138,3 +1138,34 @@
     color: var(--color-6);
     text-decoration: none;
 }
+
+/* Share button styles */
+.share-btn {
+    color: var(--light-text);
+    border: none;
+    background: transparent;
+    font-weight: 600;
+    font-size: 14px;
+    padding: 8px 12px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    transition: background-color 0.2s ease;
+}
+
+.share-btn:hover {
+    background-color: var(--hover-bg);
+}
+
+.share-btn i {
+    margin-right: 5px;
+}
+
+.share-btn.shared {
+    color: var(--primary-color);
+}
+
+.share-btn .share-count {
+    margin-left: 5px;
+    font-size: 12px;
+}

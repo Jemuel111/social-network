@@ -12,10 +12,11 @@
 <div class="layout">
     <div class="sidebar">
         <div class="logo-container text-center mb-3">
-            <img src="../assets/images/zyntra-logo.png" alt="Zyntra Logo" class="logo-img">
+            <img src="../assets/images/logo-white.png" class="img-fluid w-25 h-70" alt="Zyntra Logo" class="logo-img">
+            <h5 class="brand-text">ZYNTRA</h5>
         </div>
         <div class="admin-profile text-center mb-3">
-            <img src="../assets/images/default.png" alt="Admin Profile" class="profile-img">
+            <img src="../assets/images/default.jpg" alt="Admin Profile" class="profile-img">
         </div>
         <h3><?php echo htmlspecialchars($_SESSION['username']); ?></h3>
         <h5>Admin</h5>

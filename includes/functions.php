@@ -1,4 +1,3 @@
-
 <?php
 require_once 'config.php';
 require_once 'db_connect.php';
@@ -47,14 +46,15 @@ function get_user_by_id($user_id) {
 function get_feed_posts($user_id, $limit = 10, $offset = 0) {
     global $conn;
     
-    // Get posts from user and their friends
+    // Get posts from user and their friends, including shared posts
     $query = "SELECT p.*, u.username, u.full_name, u.profile_pic, 
                 (SELECT COUNT(*) FROM likes WHERE post_id = p.post_id) as like_count,
-                (SELECT COUNT(*) FROM comments WHERE post_id = p.post_id) as comment_count
+                (SELECT COUNT(*) FROM comments WHERE post_id = p.post_id) as comment_count,
+                (SELECT COUNT(*) FROM posts WHERE shared_post_id = p.post_id) as share_count
               FROM posts p
               JOIN users u ON p.user_id = u.user_id
-              WHERE p.user_id = ? 
-                 OR p.user_id IN (SELECT friend_id FROM friendships WHERE user_id = ? AND status = 'accepted')
+              WHERE (p.user_id = ? 
+                 OR p.user_id IN (SELECT friend_id FROM friendships WHERE user_id = ? AND status = 'accepted'))
               ORDER BY p.created_at DESC
               LIMIT ? OFFSET ?";
               
@@ -195,6 +195,17 @@ function add_comment($user_id, $post_id, $content, $parent_id = null) {
     }
     
     return false;
+}
+
+// Check if user has shared a post
+function has_user_shared_post($user_id, $post_id) {
+    global $conn;
+    $stmt = $conn->prepare("SELECT COUNT(*) as count FROM shares WHERE user_id = ? AND post_id = ?");
+    $stmt->bind_param("ii", $user_id, $post_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $row = $result->fetch_assoc();
+    return $row['count'] > 0;
 }
 
 ?>
