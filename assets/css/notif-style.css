@@ -35,8 +35,10 @@ body {
 
 .container-friend{
     padding-top: 0 !important;
-    padding-bottom: 50px !important;
+    padding-bottom: 0 !important;
+    min-height: 100%;
 }
+
 .blob {
     position: absolute;
     border-radius: 50%;
@@ -88,7 +90,7 @@ body {
     border-radius: 15px;
     padding: 20px;
     margin: 20px auto;
-    max-width: 1200px;
+    max-width: 100%;
     /* No fixed height or overflow */
 }
 
@@ -113,7 +115,7 @@ body {
     display: flex;
     flex-direction: column;
     gap: 15px;
-    /* No max-height or overflow */
+    max-height: 100%;
 }
 
 .notification-item {
