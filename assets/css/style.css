@@ -51,10 +51,10 @@
   }
     
   .custom-navbar {
-      background: linear-gradient(135deg, var(--color-4) 0%, var(--color-5) 100%);
+      background-color: var(--primary-color);
       border-radius: 15px;
       padding: 12px 20px;
-      box-shadow: 0 8px 20px rgba(26, 19, 71, 0.3);
+      box-shadow: 0 8px 20px rgba(66, 103, 178, 0.3);
       margin-bottom: 30px;
   }
 
@@ -72,21 +72,17 @@
       background-color: white;
       border-radius: 10px;
       margin-right: 10px;
-      color: var(--color-5);
+      color: var(--primary-color);
       font-weight: bold;
       font-size: 20px;
-      box-shadow: 0 3px 10px rgba(93, 71, 154, 0.2);
+      box-shadow: 0 3px 10px rgba(66, 103, 178, 0.2);
   }
 
   .brand-text {
     font-size: 2rem;
       font-weight: 700;
-      margin-bottom: 1rem;
-      background: linear-gradient(90deg, #fff, #F187EA);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
       margin: 0;
+      color: var(--white);
   }
   .profile-container {
       position: relative;
@@ -219,15 +215,15 @@
     display: flex;
     margin: 15px 0;
     padding: 15px;
-    background: var(--card-bg);
-    border: 1px solid #3C3273;
+    background: var(--white);
+    border: 1px solid var(--border-color);
     border-radius: 10px;
-    color: white;
+    color: var(--text-color);
   }
   
   .comment.reply {
     margin-left: 40px;
-    background: #332761;
+    background: var(--secondary-color);
     margin-top: 8px;
     margin-bottom: 8px;
   }
@@ -238,12 +234,12 @@
   
   .comment-content p {
     margin-bottom: 5px;
-    color: white;
+    color: var(--text-color);
   }
   
   .comment-content .comment-time {
     font-size: 0.8rem;
-    color: rgba(255, 255, 255, 0.6);
+    color: var(--light-text);
   }
   
   .comment-actions {
@@ -767,17 +763,17 @@
   /* Comment & Reply Styling */
 .comment {
   display: flex;
-  margin-bottom: 15px;
+  margin: 15px 0;
   padding: 15px;
-  background: var(--card-bg);
-  border: 1px solid #3C3273;
+  background: var(--white);
+  border: 1px solid var(--border-color);
   border-radius: 10px;
-  color: white;
+  color: var(--text-color);
 }
 
 .comment.reply {
   margin-left: 40px;
-  background: #332761;
+  background: var(--secondary-color);
   margin-top: 8px;
   margin-bottom: 8px;
 }
@@ -788,12 +784,12 @@
 
 .comment-content p {
   margin-bottom: 5px;
-  color: white;
+  color: var(--text-color);
 }
 
 .comment-content .comment-time {
   font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--light-text);
 }
 
 .comment-actions {

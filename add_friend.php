@@ -15,6 +15,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['friend_id'])) {
         exit;
     }
 
+    // Prevent sending friend request if blocked
+    $stmt = $conn->prepare("SELECT 1 FROM blocked_users WHERE (blocker_id = ? AND blocked_id = ?) OR (blocker_id = ? AND blocked_id = ?)");
+    $stmt->bind_param("iiii", $user_id, $friend_id, $friend_id, $user_id);
+    $stmt->execute();
+    if ($stmt->get_result()->num_rows > 0) {
+        header("Location: profile.php?id=$friend_id&error=blocked");
+        exit;
+    }
+
     // Check if request already exists
     $stmt = $conn->prepare("SELECT * FROM friendships WHERE (user_id = ? AND friend_id = ?) OR (user_id = ? AND friend_id = ?)");
     $stmt->bind_param("iiii", $user_id, $friend_id, $friend_id, $user_id);

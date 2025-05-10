@@ -17,6 +17,23 @@ if (!$user) {
     exit;
 }
 
+// Blocked logic
+$is_blocked = false;
+$has_blocked = false;
+if (!$is_own_profile) {
+    $user_id = $_SESSION['user_id'];
+    // Check if current user has blocked this profile
+    $stmt = $conn->prepare("SELECT 1 FROM blocked_users WHERE blocker_id = ? AND blocked_id = ?");
+    $stmt->bind_param("ii", $user_id, $profile_id);
+    $stmt->execute();
+    $has_blocked = $stmt->get_result()->num_rows > 0;
+    // Check if this profile has blocked current user
+    $stmt = $conn->prepare("SELECT 1 FROM blocked_users WHERE blocker_id = ? AND blocked_id = ?");
+    $stmt->bind_param("ii", $profile_id, $user_id);
+    $stmt->execute();
+    $is_blocked = $stmt->get_result()->num_rows > 0;
+}
+
 // Get user's posts
 $stmt = $conn->prepare("
     SELECT p.*, 
@@ -100,18 +117,30 @@ $friend_count = $stmt->get_result()->fetch_assoc()['total_friends'];
                     <?php if ($is_own_profile): ?>
                         <a href="edit_profile.php" class="btn btn-primary w-100 mb-2">Edit Profile</a>
                     <?php else: ?>
-                        <?php if (!$friendship_status): ?>
-                            <form method="POST" action="add_friend.php" class="d-grid mb-2">
-                                <input type="hidden" name="friend_id" value="<?php echo $profile_id; ?>">
-                                <button type="submit" class="btn btn-primary">Add Friend</button>
+                        <?php if ($is_blocked): ?>
+                            <div class="alert alert-danger">You are blocked by this user.</div>
+                        <?php elseif ($has_blocked): ?>
+                            <form method="POST" action="unblock_user.php" class="d-grid mb-2">
+                                <input type="hidden" name="blocked_id" value="<?php echo $profile_id; ?>">
+                                <button type="submit" class="btn btn-warning">Unblock User</button>
                             </form>
-                        <?php elseif ($friendship_status === 'pending'): ?>
-                            <button class="btn btn-secondary w-100 mb-2" disabled>Friend Request Pending</button>
-                        <?php elseif ($friendship_status === 'accepted'): ?>
-                            <button class="btn btn-success w-100 mb-2" disabled>Friends</button>
+                        <?php else: ?>
+                            <form method="POST" action="block_user.php" class="d-grid mb-2">
+                                <input type="hidden" name="blocked_id" value="<?php echo $profile_id; ?>">
+                                <button type="submit" class="btn btn-danger">Block User</button>
+                            </form>
+                            <?php if (!$friendship_status): ?>
+                                <form method="POST" action="add_friend.php" class="d-grid mb-2">
+                                    <input type="hidden" name="friend_id" value="<?php echo $profile_id; ?>">
+                                    <button type="submit" class="btn btn-primary">Add Friend</button>
+                                </form>
+                            <?php elseif ($friendship_status === 'pending'): ?>
+                                <button class="btn btn-secondary w-100 mb-2" disabled>Friend Request Pending</button>
+                            <?php elseif ($friendship_status === 'accepted'): ?>
+                                <button class="btn btn-success w-100 mb-2" disabled>Friends</button>
+                            <?php endif; ?>
+                            <a href="messages.php?friend_id=<?php echo $profile_id; ?>" class="btn btn-outline-primary w-100">Send Message</a>
                         <?php endif; ?>
-
-                        <a href="messages.php?friend_id=<?php echo $profile_id; ?>" class="btn btn-outline-primary w-100">Send Message</a>
                     <?php endif; ?>
                 </div>
             </div>
@@ -184,5 +213,21 @@ $friend_count = $stmt->get_result()->fetch_assoc()['total_friends'];
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
 <script src="assets/js/main.js"></script>
+
+<?php if (!$is_own_profile): ?>
+    <?php
+    $mutual_stmt = $conn->prepare("
+        SELECT COUNT(*) as mutual_count
+        FROM friendships f1
+        WHERE f1.status = 'accepted'
+          AND ((f1.user_id = ? AND f1.friend_id IN (SELECT friend_id FROM friendships WHERE user_id = ? AND status = 'accepted'))
+            OR (f1.friend_id = ? AND f1.user_id IN (SELECT user_id FROM friendships WHERE friend_id = ? AND status = 'accepted')))
+    ");
+    $mutual_stmt->bind_param("iiii", $user_id, $profile_id, $user_id, $profile_id);
+    $mutual_stmt->execute();
+    $mutual_count = $mutual_stmt->get_result()->fetch_assoc()['mutual_count'];
+    ?>
+    <p><i class="fas fa-users me-2"></i><?php echo $mutual_count; ?> Mutual Friends</p>
+<?php endif; ?>
 </body>
 </html>

@@ -25,9 +25,11 @@ $stmt = $conn->prepare("
     WHERE (username LIKE ? OR full_name LIKE ?)
     AND user_id != ?
     AND role != 'admin'
+    AND user_id NOT IN (SELECT blocked_id FROM blocked_users WHERE blocker_id = ?)
+    AND user_id NOT IN (SELECT blocker_id FROM blocked_users WHERE blocked_id = ?)
     LIMIT 5
 ");
-$stmt->bind_param("ssi", $search_query, $search_query, $_SESSION['user_id']);
+$stmt->bind_param("sssii", $search_query, $search_query, $_SESSION['user_id'], $_SESSION['user_id'], $_SESSION['user_id']);
 $stmt->execute();
 $result = $stmt->get_result();
 

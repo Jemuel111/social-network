@@ -1,0 +1,399 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+:root {
+    --primary: #5D479A;
+    --secondary: #694786;
+    --accent: #F187EA;
+    --dark: #1A1347;
+    --light: #A486B0;
+    --lighter: #C8B6D8;
+    --card-bg: #2A2056;
+    --navbar-bg: #231C4D;
+    --body-bg: #312768;
+    --input-bg: #3C3273;
+    --hover-bg: #3F3478;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background: var(--body-bg);
+    color: white;
+    position: relative;
+}
+
+.container-friend{
+    padding-top: 0 !important;
+    padding-bottom: 50px !important;
+}
+.text-muted{
+    color: var(--light) !important;
+}
+/* Background Elements */
+.background-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    z-index: -2;
+}
+
+.blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(60px);
+    z-index: -1;
+    opacity: 0.3;
+}
+
+.blob-1 {
+    width: 600px;
+    height: 600px;
+    background: #8A2BE2;
+    top: -200px;
+    left: -100px;
+}
+
+.blob-2 {
+    width: 500px;
+    height: 500px;
+    background: #9370DB;
+    bottom: -150px;
+    right: -100px;
+}
+
+.blob-3 {
+    width: 400px;
+    height: 400px;
+    background: #DA70D6;
+    top: 40%;
+    left: 60%;
+}
+
+.grid-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+                      linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+    background-size: 20px 20px;
+    z-index: 0;
+    opacity: 0.2;
+}
+
+/* Friend Card Styles */
+.friend-card {
+    background: var(--card-bg);
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    width: 100%;
+}
+
+.friend-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+.friend-card .d-flex {
+    width: 100%;
+    justify-content: space-between;
+}
+
+.friend-card .flex-grow-1 {
+    flex: 1;
+    min-width: 0;
+    margin-right: 15px;
+}
+
+.friend-card .ms-2 {
+    margin-left: 15px !important;
+    min-width: fit-content;
+}
+
+.friend-profile-pic {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--accent);
+    flex-shrink: 0;
+}
+
+.friend-name {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: white;
+    margin-bottom: 5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.friend-username {
+    color: var(--light);
+    font-size: 0.9rem;
+    margin-bottom: 5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.friend-actions {
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+    margin-top: 10px;
+    align-items: center;
+}
+
+.friend-actions .friend-btn {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    font-size: 1.2rem;
+}
+
+.friend-btn {
+    padding: 8px 15px;
+    border-radius: 20px;
+    border: none;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+    width: auto;
+    min-width: fit-content;
+}
+
+.friend-btn-primary {
+    background: linear-gradient(90deg, var(--primary), var(--accent));
+    text-decoration: none;
+    color: white;
+}
+
+.friend-btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(241, 135, 234, 0.3);
+}
+
+.friend-btn-secondary {
+    background: var(--input-bg);
+    color: white;
+    border: 1px solid var(--accent);
+}
+
+.friend-btn-secondary:hover {
+    background: var(--hover-bg);
+}
+
+/* Friend List Container */
+.friends-container {
+    background: var(--card-bg);
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.friends-header {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: white;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--input-bg);
+}
+
+/* Friend Search */
+.friend-search {
+    background: var(--input-bg);
+    border: 1px solid #4A3F85;
+    border-radius: 20px;
+    padding: 10px 20px;
+    color: white;
+    width: 100%;
+    
+}
+
+.friend-search:focus {
+    outline: none;
+    border-color: var(--accent);
+}
+
+.friend-search::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+/* Friend Status Badge */
+.friend-status {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.status-online {
+    background: rgba(66, 183, 42, 0.2);
+    color: #42B72A;
+}
+
+.status-offline {
+    background: rgba(255, 59, 48, 0.2);
+    color: #FF3B30;
+}
+
+/* Nav Tabs Styling */
+.nav-tabs {
+    border-bottom: 1px solid var(--input-bg);
+    margin-bottom: 20px;
+}
+
+.nav-tabs .nav-item {
+    margin-bottom: -1px;
+}
+
+.nav-tabs .nav-link {
+    color: var(--light);
+    background: transparent;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px 8px 0 0;
+    transition: all 0.3s ease;
+}
+
+.nav-tabs .nav-link:hover {
+    color: white;
+    background: var(--hover-bg);
+    border: none;
+}
+
+.nav-tabs .nav-link.active {
+    color: white;
+    background: var(--primary);
+    border: none;
+    font-weight: 500;
+}
+
+.nav-tabs .nav-link .badge {
+    margin-left: 5px;
+    background: var(--accent);
+    color: white;
+}
+
+/* Remove the old nav-item styles */
+.nav-item {
+    background-color: transparent;
+}
+
+.nav-item .active {
+    background-color: transparent;
+}
+
+.page-link{
+    background-color: var(--dark) !important;
+    border: none;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+    .friend-card .d-flex {
+        flex-wrap: wrap;
+    }
+    
+    .friend-card .ms-2 {
+        margin-left: 0 !important;
+        margin-top: 15px;
+        width: 100%;
+    }
+    
+    .friend-card .ms-2 .d-flex {
+        justify-content: flex-end;
+        gap: 10px;
+    }
+}
+
+@media (max-width: 768px) {
+    .friend-card {
+        padding: 15px;
+    }
+    
+    .friend-profile-pic {
+        width: 50px;
+        height: 50px;
+    }
+    
+    .friend-name {
+        font-size: 1.1rem;
+    }
+    
+    .friend-btn {
+        padding: 6px 12px;
+        font-size: 0.9rem;
+    }
+    
+    .nav-tabs .nav-link {
+        padding: 8px 15px;
+        font-size: 0.9rem;
+    }
+    
+    .friends-header {
+        font-size: 1.3rem;
+    }
+    
+    .friend-search {
+        padding: 8px 15px;
+    }
+    .friend-card .d-flex {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        width: 100%;
+    }
+    .friend-card .ms-2 {
+        margin-left: 0 !important;
+        margin-top: 15px;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        order: 2;
+    }
+    .friend-card .ms-2 .friend-btn {
+        width: 48px;
+        height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+        font-size: 1.2rem;
+    }
+    .friend-card .flex-grow-1 {
+        width: 100%;
+        order: 1;
+    }
+    .friend-profile-pic {
+        margin-bottom: 10px;
+    }
+}
+
+.request-badge {
+    background: var(--accent);
+    color: #fff;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-left: 6px;
+    border-radius: 12px;
+    padding: 4px 10px;
+    vertical-align: middle;
+    box-shadow: 0 2px 8px rgba(241, 135, 234, 0.15);
+}

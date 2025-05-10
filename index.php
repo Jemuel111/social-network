@@ -824,7 +824,7 @@ while ($row = $result->fetch_assoc()) {
                         <!-- Friends Card -->
                         <div class="friends-card">
                             <div class="friends-card-header">
-                                <h2>Friends <span class="friends-count"><?php echo $friend_count; ?><i class="bi bi-people" style="padding-left: 5px;"></i></span></h2>
+                                <h2>Friends <span class="friends-count"><?php echo $friend_count; ?><i class="fas fa-users" style="padding-left: 5px;"></i></span></h2>
                             </div>
                             <div class="friends-grid">
                                 <?php
@@ -949,7 +949,7 @@ while ($row = $result->fetch_assoc()) {
                                             <span class="like-count"><?php echo $post['like_count']; ?></span>
                                         </button>
                                         <button class="post-action comment-btn" data-post-id="<?php echo $post['post_id']; ?>">
-                                            <i class="far fa-comment"></i>
+                                            <i class="bi bi-chat-fill"></i>
                                             <span class="comment-count"><?php echo $post['comment_count']; ?></span>
                                         </button>
                                         <button class="share-btn <?php echo has_user_shared_post($_SESSION['user_id'], $post['post_id']) ? 'shared' : ''; ?>" data-post-id="<?php echo $post['post_id']; ?>">
@@ -1000,7 +1000,7 @@ while ($row = $result->fetch_assoc()) {
                                             <h3 class="friend-name"><?php echo $suggestion['username']; ?></h3>
                                             <form method="POST" action="add_friend.php" style="margin-top: 0.5rem;">
                                                 <input type="hidden" name="friend_id" value="<?php echo $suggestion['user_id']; ?>">
-                                                <button type="submit" class="friend-add" title="Add Friend"><i class="bi bi-person-plus"></i></button>
+                                                <button type="submit" class="friend-add" title="Add Friend"><i class="bi bi-person-plus-fill"></i></button>
                                             </form>
                                         </a>
                                     <?php endforeach; ?>
