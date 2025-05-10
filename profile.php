@@ -34,6 +34,12 @@ if (!$is_own_profile) {
     $is_blocked = $stmt->get_result()->num_rows > 0;
 }
 
+// If either user has blocked the other, don't show the profile
+if ($is_blocked || $has_blocked) {
+    header("Location: friends.php");
+    exit;
+}
+
 // Get user's posts
 $stmt = $conn->prepare("
     SELECT p.*, 
@@ -114,33 +120,35 @@ $friend_count = $stmt->get_result()->fetch_assoc()['total_friends'];
                     <p><i class="fas fa-user-friends me-2"></i><?php echo $friend_count; ?> Friends</p>
 
                     <!-- Action buttons -->
-                    <?php if ($is_own_profile): ?>
-                        <a href="edit_profile.php" class="btn btn-primary w-100 mb-2">Edit Profile</a>
-                    <?php else: ?>
-                        <?php if ($is_blocked): ?>
-                            <div class="alert alert-danger">You are blocked by this user.</div>
-                        <?php elseif ($has_blocked): ?>
-                            <form method="POST" action="unblock_user.php" class="d-grid mb-2">
-                                <input type="hidden" name="blocked_id" value="<?php echo $profile_id; ?>">
-                                <button type="submit" class="btn btn-warning">Unblock User</button>
-                            </form>
-                        <?php else: ?>
+                    <?php if (!$is_own_profile): ?>
+                        <?php if ($friendship_status === 'accepted'): ?>
                             <form method="POST" action="block_user.php" class="d-grid mb-2">
                                 <input type="hidden" name="blocked_id" value="<?php echo $profile_id; ?>">
-                                <button type="submit" class="btn btn-danger">Block User</button>
+                                <button type="submit" class="btn btn-danger"><i class="fas fa-ban"></i> Block User</button>
                             </form>
-                            <?php if (!$friendship_status): ?>
-                                <form method="POST" action="add_friend.php" class="d-grid mb-2">
-                                    <input type="hidden" name="friend_id" value="<?php echo $profile_id; ?>">
-                                    <button type="submit" class="btn btn-primary">Add Friend</button>
-                                </form>
-                            <?php elseif ($friendship_status === 'pending'): ?>
-                                <button class="btn btn-secondary w-100 mb-2" disabled>Friend Request Pending</button>
-                            <?php elseif ($friendship_status === 'accepted'): ?>
-                                <button class="btn btn-success w-100 mb-2" disabled>Friends</button>
-                            <?php endif; ?>
+                            <form method="POST" action="unfriend.php" class="d-grid mb-2">
+                                <input type="hidden" name="friend_id" value="<?php echo $profile_id; ?>">
+                                <button type="submit" class="btn btn-outline-danger"><i class="bi bi-person-dash-fill"></i> Unfriend</button>
+                            </form>
                             <a href="messages.php?friend_id=<?php echo $profile_id; ?>" class="btn btn-outline-primary w-100">Send Message</a>
+                        <?php elseif ($friendship_status === 'pending'): ?>
+                            <button class="btn btn-secondary w-100 mb-2" disabled>Friend Request Pending</button>
+                            <form method="POST" action="block_user.php" class="d-grid mb-2">
+                                <input type="hidden" name="blocked_id" value="<?php echo $profile_id; ?>">
+                                <button type="submit" class="btn btn-danger"><i class="fas fa-ban"></i> Block User</button>
+                            </form>
+                        <?php else: ?>
+                            <form method="POST" action="add_friend.php" class="d-grid mb-2">
+                                <input type="hidden" name="friend_id" value="<?php echo $profile_id; ?>">
+                                <button type="submit" class="btn btn-primary"><i class="bi bi-person-plus"></i> Add Friend</button>
+                            </form>
+                            <form method="POST" action="block_user.php" class="d-grid mb-2">
+                                <input type="hidden" name="blocked_id" value="<?php echo $profile_id; ?>">
+                                <button type="submit" class="btn btn-danger"><i class="fas fa-ban"></i> Block User</button>
+                            </form>
                         <?php endif; ?>
+                    <?php else: ?>
+                        <a href="edit_profile.php" class="btn btn-primary w-100 mb-2">Edit Profile</a>
                     <?php endif; ?>
                 </div>
             </div>

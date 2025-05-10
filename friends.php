@@ -81,6 +81,19 @@ $friend_suggestions = [];
 while ($row = $suggestion_result->fetch_assoc()) {
     $friend_suggestions[] = $row;
 }
+
+// Fetch blocked users
+$blocked_query = "
+    SELECT u.*, 
+        (SELECT COUNT(*) FROM friendships f2 WHERE ((f2.user_id = u.user_id AND f2.friend_id != ?) OR (f2.friend_id = u.user_id AND f2.user_id != ?)) AND f2.status = 'accepted') as mutual_friends
+    FROM users u 
+    INNER JOIN blocked_users b ON u.user_id = b.blocked_id 
+    WHERE b.blocker_id = ?
+    ORDER BY u.full_name ASC";
+$blocked_stmt = $conn->prepare($blocked_query);
+$blocked_stmt->bind_param("iii", $user_id, $user_id, $user_id);
+$blocked_stmt->execute();
+$blocked_users = $blocked_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 ?>
 
 <!DOCTYPE html>
@@ -105,6 +118,26 @@ while ($row = $suggestion_result->fetch_assoc()) {
 <?php include 'includes/navbar.php'; ?>
 
 <div class="container container-friend py-5">
+    <?php if (isset($_SESSION['error'])): ?>
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <?php 
+            echo $_SESSION['error'];
+            unset($_SESSION['error']);
+            ?>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    <?php endif; ?>
+    
+    <?php if (isset($_SESSION['success'])): ?>
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <?php 
+            echo $_SESSION['success'];
+            unset($_SESSION['success']);
+            ?>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    <?php endif; ?>
+
     <div class="friends-container">
         <div class="d-flex flex-column flex-md-row align-items-center justify-content-between mb-3">
             <h2 class="friends-header mb-3 mb-md-0">Friends</h2>
@@ -259,9 +292,34 @@ while ($row = $suggestion_result->fetch_assoc()) {
                     </div>
                 <?php endif; ?>
             </div>
-            <!-- Blocked Tab (Placeholder) -->
+            <!-- Blocked Tab -->
             <div class="tab-pane fade" id="blocked" role="tabpanel">
-                <p class="text-muted">No blocked users.</p>
+                <?php if (empty($blocked_users)): ?>
+                    <p class="text-muted">You haven't blocked any users.</p>
+                <?php else: ?>
+                    <div class="row g-3">
+                        <?php foreach ($blocked_users as $blocked): ?>
+                            <div class="col-md-4">
+                                <div class="friend-card">
+                                    <div class="d-flex align-items-center">
+                                        <img src="assets/images/<?php echo htmlspecialchars($blocked['profile_pic']); ?>" class="friend-profile-pic me-3" alt="">
+                                        <div class="flex-grow-1">
+                                            <h5 class="friend-name mb-0"><?php echo htmlspecialchars($blocked['full_name']); ?></h5>
+                                            <small class="friend-username">@<?php echo htmlspecialchars($blocked['username']); ?></small><br>
+                                            <span class="friend-status status-online mt-1"><i class="fas fa-users"></i> <?php echo $blocked['mutual_friends'] ?? 0; ?> mutual friends</span>
+                                            <div class="friend-actions">
+                                                <form method="POST" action="unblock_user.php">
+                                                    <input type="hidden" name="blocked_id" value="<?php echo $blocked['user_id']; ?>">
+                                                    <button type="submit" class="friend-btn friend-btn-primary"><i class="fas fa-unlock"></i> Unblock</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                <?php endif; ?>
             </div>
         </div>
     </div>
