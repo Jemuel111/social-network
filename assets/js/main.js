@@ -231,3 +231,20 @@ function updateBadgeVisibility(badge, count) {
         badge.style.display = 'none';
     }
 }
+
+function updateNavbarNotificationBadge() {
+    fetch('ajax/get_unread_notifications_count.php')
+        .then(response => response.json())
+        .then(data => {
+            const badge = document.getElementById('navbarNotificationBadge');
+            if (!badge) return;
+            if (data.status === 'success') {
+                if (data.count > 0) {
+                    badge.textContent = data.count;
+                    badge.style.display = 'inline-block';
+                } else {
+                    badge.style.display = 'none';
+                }
+            }
+        });
+}

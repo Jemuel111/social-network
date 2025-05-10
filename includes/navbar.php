@@ -22,7 +22,7 @@
                 $unread_count = get_unread_notifications_count($_SESSION['user_id']);
                 if ($unread_count > 0):
                 ?>
-                <span class="badge bg-danger rounded-pill"><?php echo $unread_count; ?></span>
+                <span class="badge bg-danger rounded-pill" id="navbarNotificationBadge"><?php echo $unread_count; ?></span>
                 <?php endif; ?>
             </a>
             <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'search.php' ? 'active' : ''; ?>" href="search.php">
@@ -54,7 +54,7 @@
                         <?php
                         if ($unread_count > 0):
                         ?>
-                        <span class="badge bg-danger rounded-pill"><?php echo $unread_count; ?></span>
+                        <span class="badge bg-danger rounded-pill" id="navbarNotificationBadge"><?php echo $unread_count; ?></span>
                         <?php endif; ?>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end notification-dropdown" aria-labelledby="notificationDropdown">

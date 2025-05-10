@@ -73,14 +73,17 @@ foreach ($notifications as $notif) {
             <?php else: ?>
                 <div class="notification-list">
                     <?php foreach ($notifications as $notif): ?>
-                        <!-- Your existing notification-item markup here -->
-                        <div class="notification-item <?php echo $notif['is_read'] ? '' : 'unread'; ?>">
+                        <div class="notification-item <?php echo $notif['is_read'] ? '' : 'unread'; ?>" data-notification-id="<?php echo $notif['notification_id']; ?>">
                             <div class="notification-avatar">
                                 <?php
                                 $icon = 'fa-bell';
-                                if (strpos($notif['message'], 'commented') !== false) $icon = 'fa-comment';
-                                elseif (strpos($notif['message'], 'liked') !== false) $icon = 'fa-heart';
-                                elseif (strpos($notif['message'], 'friend request') !== false) $icon = 'fa-user-plus';
+                                if (strpos($notif['message'], 'commented') !== false) {
+                                    $icon = 'fa-comment';
+                                } elseif (strpos($notif['message'], 'liked') !== false) {
+                                    $icon = 'fa-heart';
+                                } elseif (strpos($notif['message'], 'friend request') !== false) {
+                                    $icon = 'fa-user-plus';
+                                }
                                 ?>
                                 <i class="fas <?php echo $icon; ?>"></i>
                                 <?php if (!$notif['is_read']): ?>
@@ -91,10 +94,12 @@ foreach ($notifications as $notif) {
                                 <p class="notification-message"><?php echo htmlspecialchars($notif['message']); ?></p>
                                 <p class="notification-time"><?php echo format_date($notif['created_at']); ?></p>
                             </div>
-                            <?php if (strpos($notif['message'], 'friend request') !== false):
+                            <?php 
+                            if (strpos($notif['message'], 'friend request') !== false) {
                                 preg_match('/user_id=(\d+)/', $notif['message'], $matches);
                                 $from_user_id = $matches[1] ?? null;
-                                if ($from_user_id): ?>
+                                if ($from_user_id) {
+                            ?>
                                 <div class="notification-actions">
                                     <form method="POST" action="accept_friend.php" class="d-inline">
                                         <input type="hidden" name="user_id" value="<?php echo $from_user_id; ?>">
@@ -105,7 +110,10 @@ foreach ($notifications as $notif) {
                                         <button type="submit" class="action-btn btn-secondary">Decline</button>
                                     </form>
                                 </div>
-                            <?php endif; endif; ?>
+                            <?php 
+                                }
+                            }
+                            ?>
                         </div>
                     <?php endforeach; ?>
                 </div>
@@ -114,8 +122,57 @@ foreach ($notifications as $notif) {
     </div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
 <script>
 $(document).ready(function() {
+    // Mark notification as read when viewed
+    $('.notification-item').each(function() {
+        const notificationId = $(this).data('notification-id');
+        if (!$(this).hasClass('unread')) return;
+
+        // Create an intersection observer
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    // Mark as read when notification is visible
+                    $.post('mark_notification_read.php', {
+                        notification_id: notificationId
+                    }, function(response) {
+                        if (response.success) {
+                            // Remove unread styling
+                            $(entry.target).removeClass('unread');
+                            $(entry.target).find('.notification-dot').remove();
+                            
+                            // Update the badge count if it's a friend request
+                            if ($(entry.target).find('.fa-user-plus').length > 0) {
+                                const currentCount = parseInt($('.badge.bg-danger').text()) || 0;
+                                if (currentCount > 0) {
+                                    const newCount = currentCount - 1;
+                                    if (newCount > 0) {
+                                        $('.badge.bg-danger').text(newCount + ' new');
+                                    } else {
+                                        $('.badge.bg-danger').remove();
+                                    }
+                                }
+                            }
+                            // Update the navbar notification badge
+                            if (typeof updateNavbarNotificationBadge === 'function') {
+                                updateNavbarNotificationBadge();
+                            }
+                        }
+                    });
+                    // Stop observing after marking as read
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, {
+            threshold: 0.5 // Trigger when 50% of the notification is visible
+        });
+
+        // Start observing the notification
+        observer.observe(this);
+    });
+
     // Infinite scroll for notifications
     let loading = false;
     let page = 1;
@@ -125,6 +182,7 @@ $(document).ready(function() {
             loadMoreNotifications();
         }
     });
+
     function loadMoreNotifications() {
         loading = true;
         page++;
@@ -143,6 +201,7 @@ $(document).ready(function() {
             }
         });
     }
+
     // If we have less than a page of notifications initially, disable scroll loading
     if (initialCount < 15) { // assuming 15 is your page size
         $(window).off('scroll');
