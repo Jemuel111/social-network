@@ -57,6 +57,31 @@ $stmt->execute();
 $result = $stmt->get_result();
 $friends = $result->fetch_all(MYSQLI_ASSOC);
 
+// Fetch last message for each friend
+$last_messages = [];
+foreach ($friends as $friend) {
+    $fid = $friend['user_id'];
+    $msg_stmt = $conn->prepare("SELECT * FROM messages WHERE (sender_id = ? AND receiver_id = ?) OR (sender_id = ? AND receiver_id = ?) ORDER BY created_at DESC LIMIT 1");
+    $msg_stmt->bind_param("iiii", $user_id, $fid, $fid, $user_id);
+    $msg_stmt->execute();
+    $msg_result = $msg_stmt->get_result();
+    $last_messages[$fid] = $msg_result->fetch_assoc();
+}
+// Sort friends by most recent message
+usort($friends, function($a, $b) use ($last_messages) {
+    $a_msg = $last_messages[$a['user_id']];
+    $b_msg = $last_messages[$b['user_id']];
+    if ($a_msg && $b_msg) {
+        return strtotime($b_msg['created_at']) - strtotime($a_msg['created_at']);
+    } elseif ($a_msg) {
+        return -1;
+    } elseif ($b_msg) {
+        return 1;
+    } else {
+        return 0;
+    }
+});
+
 // Fetch messages if a friend is selected
 $chat_messages = [];
 if (isset($_GET['friend_id'])) {
@@ -74,73 +99,61 @@ if (isset($_GET['friend_id'])) {
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Messages - SocialConnect</title>
+    <title>Messages - Zyntra</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/message-style.css">
 </head>
-<body>
+<body style="overflow: hidden;">
+<!-- Background Elements -->
+<div class="background-container">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+    <div class="grid-bg"></div>
+</div>
+<!-- No navbar here for full-screen chat -->
 
-<?php include 'includes/navbar.php'; ?>
-
-<div class="container py-4">
-    <div class="row">
-        <div class="col-md-4">
-            <form class="mb-3">
-                <input type="text" name="search" class="form-control" placeholder="Search friends..." value="<?php echo htmlspecialchars($search); ?>">
-            </form>
-            <div class="list-group">
-                <?php foreach ($friends as $friend): ?>
-                    <a href="?friend_id=<?php echo $friend['user_id']; ?>" class="list-group-item list-group-item-action <?php if(isset($_GET['friend_id']) && $_GET['friend_id'] == $friend['user_id']) echo 'active'; ?>">
-                        <img src="assets/images/<?php echo htmlspecialchars($friend['profile_pic']); ?>" class="rounded-circle me-2" width="30" height="30" alt="Profile">
-                        <?php echo htmlspecialchars($friend['full_name']); ?>
-                        <?php if ($friend['is_online']): ?>
-                            <span class="badge bg-success float-end">Online</span>
-                        <?php else: ?>
-                            <span class="badge bg-secondary float-end">Offline</span>
-                        <?php endif; ?>
-                    </a>
-                <?php endforeach; ?>
-            </div>
+<div class="messenger-unique-container">
+    <div class="chat-list-unique" id="chatList">
+        <button class="back-to-home-btn" onclick="window.location.href='index.php'"><i style="color: white;" class="bi bi-caret-left-fill"></i> Back to Home</button>
+        <form class="mb-3">
+            <input type="text" name="search" class="form-control search" placeholder="Search friends..." value="<?php echo htmlspecialchars($search); ?>">
+        </form>
+        <div class="list-group">
+            <?php foreach ($friends as $friend): ?>
+                <a href="?friend_id=<?php echo $friend['user_id']; ?>" class="list-group-item list-group-item-action friend-link <?php if(isset($_GET['friend_id']) && $_GET['friend_id'] == $friend['user_id']) echo 'active'; ?>">
+                    <span class="avatar-wrapper">
+                        <img src="assets/images/<?php echo htmlspecialchars($friend['profile_pic']); ?>" class="rounded-circle avatar-img" alt="Profile">
+                        <span class="online-dot <?php echo $friend['is_online'] ? 'online' : 'offline'; ?>"></span>
+                    </span>
+                    <span class="friend-info">
+                        <span class="friend-name"><?php echo htmlspecialchars($friend['full_name']); ?></span>
+                        <span class="last-message-preview">
+                            <?php
+                            $last = $last_messages[$friend['user_id']];
+                            if ($last) {
+                                $is_me = $last['sender_id'] == $user_id;
+                                $prefix = $is_me ? 'You: ' : '';
+                                $msg = htmlspecialchars(mb_strimwidth($last['content'], 0, 30, '...'));
+                                echo $prefix . $msg;
+                            } else {
+                                echo '<span style="color:var(--color-3);">No messages yet</span>';
+                            }
+                            ?>
+                        </span>
+                    </span>
+                </a>
+            <?php endforeach; ?>
         </div>
-
-        <div class="col-md-8">
-            <?php if (isset($_GET['friend_id'])): 
-                $friend_id = intval($_GET['friend_id']);
-                $friend_info = get_user_by_id($friend_id);
-                
-                if (!$friend_info): ?>
-                    <div class="alert alert-danger">User not found.</div>
-                <?php else: ?>
-                    <div class="card">
-                        <div class="card-header">
-                            Chatting with <?php echo htmlspecialchars($friend_info['full_name']); ?>
-                        </div>
-                        <div class="card-body" id="chat-box" style="height:400px; overflow-y: scroll;">
-                            <?php foreach ($chat_messages as $msg): ?>
-                                <div class="mb-2 text-<?php echo $msg['sender_id'] == $user_id ? 'end' : 'start'; ?>">
-                                    <small class="text-muted"><?php echo format_date($msg['created_at']); ?></small><br>
-                                    <span class="badge <?php echo $msg['sender_id'] == $user_id ? 'bg-primary' : 'bg-secondary'; ?>">
-                                        <?php echo htmlspecialchars($msg['content']); ?>
-                                    </span>
-                                </div>
-                            <?php endforeach; ?>
-                        </div>
-                        <div class="card-footer">
-                            <form id="send-message-form" method="POST" action="send_message.php">
-                                <div class="input-group">
-                                    <input type="hidden" name="receiver_id" value="<?php echo $friend_id; ?>">
-                                    <input type="text" name="message" class="form-control" placeholder="Type your message..." required>
-                                    <button class="btn btn-primary" type="submit">Send</button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                <?php endif; ?>
-            <?php else: ?>
-                <div class="alert alert-info">Select a friend to start chatting.</div>
-            <?php endif; ?>
+    </div>
+    <div class="chat-window-unique" id="chatWindow">
+        <!-- This will be filled by AJAX -->
+        <div class="empty-chat-unique">
+            <i class="fas fa-comments fa-3x mb-3" style="color:var(--color-6);"></i>
+            <h5>Select a friend to start chatting.</h5>
         </div>
     </div>
 </div>

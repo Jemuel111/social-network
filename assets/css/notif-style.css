@@ -22,6 +22,11 @@ body {
     position: relative;
     overflow-x: hidden; /* Prevent horizontal scroll */
 }
+.container-friend{
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    min-height: 100%;
+}
 /* Background Elements */
 .background-container {
     position: fixed;
@@ -33,11 +38,7 @@ body {
     z-index: -2;
 }
 
-.container-friend{
-    padding-top: 0 !important;
-    padding-bottom: 0 !important;
-    min-height: 100%;
-}
+
 
 .blob {
     position: absolute;

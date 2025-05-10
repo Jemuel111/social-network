@@ -39,6 +39,46 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Initialize notification system
     initializeNotifications();
+
+    // Messenger mobile navigation
+    setupMessengerMobileNav();
+
+    // Event delegation for friend links
+    document.getElementById('chatList').addEventListener('click', function(e) {
+        const link = e.target.closest('.friend-link');
+        if (link) {
+            e.preventDefault();
+            const url = link.getAttribute('href');
+            const params = new URLSearchParams(url.split('?')[1]);
+            const friendId = params.get('friend_id');
+            loadChat(friendId);
+            // Mobile slide-in
+            if (window.innerWidth <= 768) {
+                document.getElementById('chatWindow').classList.add('active');
+                document.getElementById('chatList').classList.add('hide');
+            }
+        }
+    });
+
+    // Back button (event delegation, since chat is loaded dynamically)
+    document.getElementById('chatWindow').addEventListener('click', function(e) {
+        if (e.target.classList.contains('back-btn-unique')) {
+            if (window.innerWidth <= 768) {
+                document.getElementById('chatWindow').classList.remove('active');
+                document.getElementById('chatList').classList.remove('hide');
+            }
+        }
+    });
+
+    // Initial load: if there's a friend_id in the URL, load that chat
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('friend_id')) {
+        loadChat(urlParams.get('friend_id'));
+        if (window.innerWidth <= 768) {
+            document.getElementById('chatWindow').classList.add('active');
+            document.getElementById('chatList').classList.add('hide');
+        }
+    }
 });
 
 function likePost(postId, button) {
@@ -247,4 +287,73 @@ function updateNavbarNotificationBadge() {
                 }
             }
         });
+}
+
+// Messenger mobile navigation
+function setupMessengerMobileNav() {
+    const chatList = document.getElementById('chatList');
+    const chatWindow = document.getElementById('chatWindow');
+    const backBtn = document.getElementById('backBtn');
+    if (!chatList || !chatWindow || !backBtn) return;
+
+    // Use event delegation for friend links
+    chatList.addEventListener('click', function(e) {
+        const link = e.target.closest('.friend-link');
+        if (link && window.innerWidth <= 768) {
+            setTimeout(() => {
+                chatWindow.classList.add('active');
+                chatList.classList.add('hide');
+            }, 50); // slight delay to allow navigation
+        }
+    });
+    // Back button
+    backBtn.addEventListener('click', function() {
+        if (window.innerWidth <= 768) {
+            chatWindow.classList.remove('active');
+            chatList.classList.remove('hide');
+        }
+    });
+}
+
+// AJAX function to load chat
+function loadChat(friendId) {
+    fetch('ajax/get_chat.php?friend_id=' + friendId)
+        .then(response => response.text())
+        .then(html => {
+            document.getElementById('chatWindow').innerHTML = html;
+            scrollChatToBottom();
+            setupSendMessageAJAX(friendId);
+
+            // Always add .active to chatWindow and .hide to chatList on mobile
+            if (window.innerWidth <= 768) {
+                document.getElementById('chatWindow').classList.add('active');
+                document.getElementById('chatList').classList.add('hide');
+            }
+        });
+}
+
+// Scroll chat to bottom
+function scrollChatToBottom() {
+    const chatBox = document.getElementById('chat-box');
+    if (chatBox) {
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }
+}
+
+// AJAX send message
+function setupSendMessageAJAX(friendId) {
+    const form = document.getElementById('send-message-form');
+    if (!form) return;
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const formData = new FormData(form);
+        fetch('send_message.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(() => {
+            loadChat(friendId); // Reload chat after sending
+        });
+        form.reset();
+    });
 }

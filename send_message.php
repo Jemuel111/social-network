@@ -17,6 +17,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
+// If AJAX, just exit
+if (!empty($_SERVER['HTTP_X_REQUESTED_WITH'])) {
+    exit;
+}
+
+// Otherwise, redirect (for non-AJAX fallback)
 header('Location: messages.php?friend_id=' . $receiver_id);
 exit;
 
