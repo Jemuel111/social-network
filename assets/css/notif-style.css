@@ -1,0 +1,239 @@
+/* notif-style.css */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+:root {
+    --primary: #5D479A;
+    --secondary: #694786;
+    --accent: #F187EA;
+    --dark: #1A1347;
+    --light: #A486B0;
+    --lighter: #C8B6D8;
+    --card-bg: #2A2056;
+    --navbar-bg: #231C4D;
+    --body-bg: #312768;
+    --input-bg: #3C3273;
+    --hover-bg: #3F3478;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background: var(--body-bg);
+    color: white;
+    position: relative;
+    overflow-x: hidden; /* Prevent horizontal scroll */
+}
+/* Background Elements */
+.background-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    z-index: -2;
+}
+
+.container-friend{
+    padding-top: 0 !important;
+    padding-bottom: 50px !important;
+}
+.blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(60px);
+    z-index: -1;
+    opacity: 0.3;
+}
+
+.blob-1 {
+    width: 600px;
+    height: 600px;
+    background: #8A2BE2;
+    top: -200px;
+    left: -100px;
+}
+
+.blob-2 {
+    width: 500px;
+    height: 500px;
+    background: #9370DB;
+    bottom: -150px;
+    right: -100px;
+}
+
+.blob-3 {
+    width: 400px;
+    height: 400px;
+    background: #DA70D6;
+    top: 40%;
+    left: 60%;
+}
+
+.grid-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+                      linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+    background-size: 20px 20px;
+    z-index: 0;
+    opacity: 0.2;
+}
+
+/* Notification Container */
+.notification-container {
+    background: var(--card-bg);
+    border-radius: 15px;
+    padding: 20px;
+    margin: 20px auto;
+    max-width: 1200px;
+    /* No fixed height or overflow */
+}
+
+.notification-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid var(--input-bg);
+}
+
+.notification-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: white;
+    margin: 0;
+}
+
+/* Notification Items */
+.notification-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    /* No max-height or overflow */
+}
+
+.notification-item {
+    background: var(--input-bg);
+    border-radius: 15px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    transition: transform 0.3s ease;
+}
+
+.notification-item:hover {
+    transform: translateY(-2px);
+}
+
+.notification-item.unread {
+    border-left: 4px solid var(--accent);
+}
+
+.notification-avatar {
+    width: 50px;
+    height: 50px;
+    background: var(--card-bg);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    color: var(--accent);
+    position: relative;
+}
+
+.notification-dot {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 12px;
+    height: 12px;
+    background: var(--accent);
+    border-radius: 50%;
+    border: 2px solid var(--card-bg);
+}
+
+.notification-content {
+    flex: 1;
+}
+
+.notification-message {
+    margin: 0;
+    color: white;
+    font-size: 1rem;
+}
+
+.notification-time {
+    margin: 5px 0 0;
+    color: var(--light);
+    font-size: 0.9rem;
+}
+
+.notification-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.action-btn {
+    padding: 8px 15px;
+    border-radius: 20px;
+    border: none;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.action-btn.btn-primary {
+    background: linear-gradient(90deg, var(--primary), var(--accent));
+    color: white;
+}
+
+.action-btn.btn-secondary {
+    background: var(--input-bg);
+    color: white;
+    border: 1px solid var(--accent);
+}
+
+.action-btn:hover {
+    transform: translateY(-2px);
+}
+
+/* Empty State */
+.empty-notifications {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--light);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .notification-header {
+        flex-direction: column;
+        gap: 15px;
+        align-items: flex-start;
+    }
+
+    .notification-actions {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .notification-item {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .notification-avatar {
+        margin-bottom: 10px;
+    }
+
+    .notification-actions {
+        width: 100%;
+        justify-content: flex-end;
+    }
+}
