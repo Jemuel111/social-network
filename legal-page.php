@@ -9,11 +9,11 @@
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #f0f2f5;
-            color: #1c1e21;
+            background-color: #312E5E;
+            color: #ffffff;
         }
         .header {
-            background-color: #1877f2;
+            background-color: #2C2756;
             color: white;
             padding: 10px 20px;
             display: flex;
@@ -21,34 +21,26 @@
             justify-content: space-between;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
-        .logo {
-            font-size: 24px;
-            font-weight: bold;
-            text-decoration: none;
-            color: white;
-            display: flex;
-            align-items: center;
-        }
-        .logo img {
+        .header img {
             height: 30px;
-            margin-right: 10px;
         }
         .container {
             max-width: 1000px;
             margin: 20px auto;
             padding: 20px;
-            background-color: white;
+            background-color: #2C2756;
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
         .footer {
             text-align: center;
             padding: 20px;
-            color: #65676b;
+            color: #8C86A3;
             font-size: 14px;
+            background-color: #312E5E;
         }
         .footer a {
-            color: #1877f2;
+            color: #8A4FFF;
             text-decoration: none;
             margin: 0 10px;
         }
@@ -57,7 +49,7 @@
         }
         .tabs {
             display: flex;
-            border-bottom: 1px solid #ddd;
+            border-bottom: 1px solid #4A4475;
             margin-bottom: 20px;
         }
         .tab {
@@ -65,9 +57,10 @@
             cursor: pointer;
             border-radius: 4px 4px 0 0;
             margin-right: 5px;
+            color: #8C86A3;
         }
         .tab.active {
-            background-color: #1877f2;
+            background: linear-gradient(135deg, #8A4FFF, #5E2BFF);
             color: white;
         }
         .tab-content {
@@ -77,18 +70,19 @@
             display: block;
         }
         h1 {
-            color: #1877f2;
+            color: #8A4FFF;
             font-size: 24px;
         }
         h2 {
-            color: #1c1e21;
+            color: #8A4FFF;
             font-size: 20px;
         }
         p, ul li {
             line-height: 1.5;
+            color: #E0E0E0;
         }
         .back-button {
-            background-color: #1877f2;
+            background: linear-gradient(135deg, #8A4FFF, #5E2BFF);
             color: white;
             border: none;
             padding: 10px 15px;
@@ -98,23 +92,26 @@
             margin-top: 20px;
         }
         .back-button:hover {
-            background-color: #166fe5;
+            opacity: 0.9;
         }
         .accordion {
             margin-bottom: 10px;
-            border: 1px solid #ddd;
+            border: 1px solid #4A4475;
             border-radius: 4px;
+            background-color: #312E5E;
         }
         .accordion-header {
             padding: 15px;
-            background-color: #f5f6f7;
+            background-color: #2C2756;
             cursor: pointer;
             font-weight: bold;
+            color: #8C86A3;
         }
         .accordion-content {
             padding: 15px;
             display: none;
-            border-top: 1px solid #ddd;
+            border-top: 1px solid #4A4475;
+            background-color: #312E5E;
         }
     </style>
 </head>
