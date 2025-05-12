@@ -215,11 +215,11 @@ function likePost(postId, button) {
             countElement.textContent = data.likes;
             
             if (data.liked) {
-                button.classList.remove('btn-outline-primary');
+                button.classList.remove('');
                 button.classList.add('btn-primary');
             } else {
                 button.classList.remove('btn-primary');
-                button.classList.add('btn-outline-primary');
+                button.classList.add('');
             }
         }
     })

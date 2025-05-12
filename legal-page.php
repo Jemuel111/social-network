@@ -3,26 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zyntra</title>
+    <title>Help Center - Zyntra</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="assets/css/style.css">
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
         body {
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
             background-color: #312E5E;
             color: #ffffff;
-        }
-        .header {
-            background-color: #2C2756;
-            color: white;
-            padding: 10px 20px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        .header img {
-            height: 30px;
         }
         .container {
             max-width: 1000px;
@@ -113,12 +106,26 @@
             border-top: 1px solid #4A4475;
             background-color: #312E5E;
         }
+        /* Mobile Navigation */
+        @media (max-width: 992px) {
+            .custom-navbar {
+                margin-bottom: 15px;
+            }
+
+            .navbar-brand {
+                margin: 0 auto;
+            }
+        }
     </style>
 </head>
 <body>
-    <div class="header">
-     <img src="assets/images/zyntra-logo.png" alt="Zyntra logo">
+    <div class="container">
+        <a class="navbar-brand" href="index.php">
+            <img src="assets/images/logo-white.png" alt="" class="img-fluid" style="max-height: 50px; margin-right: 15px;">
+            <h5 class="brand-text">ZYNTRA</h5>
+        </a>
     </div>
+
 
     <div class="container">
         <div class="tabs">
@@ -132,58 +139,62 @@
             <p>Last updated: May 3, 2025</p>
 
             <h2>1. Introduction</h2>
-            <p>Welcome to Zyntra. We are committed to protecting your personal information and your right to privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our platform.</p>
+            <p>Welcome to Zyntra. We are committed to protecting your personal information and your right to privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our social networking platform.</p>
 
             <h2>2. Information We Collect</h2>
             <p>We collect information that you provide directly to us, including:</p>
             <ul>
-                <li>Account information (name, email address, password, date of birth)</li>
+                <li>Account information (name, email address, password)</li>
                 <li>Profile information (profile picture, bio, location)</li>
-                <li>Content you post (posts, comments, photos)</li>
-                <li>Communications (messages with other users)</li>
-                <li>Transaction data (if you purchase premium features)</li>
+                <li>Content you post (text posts, images)</li>
+                <li>Social interactions (likes, comments, shares)</li>
+                <li>Friend connections and friend requests</li>
             </ul>
             <p>We also automatically collect certain information when you use our platform, including:</p>
             <ul>
-                <li>Device information (IP address, browser type, operating system)</li>
-                <li>Usage data (pages visited, time spent, clicks)</li>
-                <li>Location data (with your permission)</li>
+                <li>Device information (IP address, browser type)</li>
+                <li>Usage data (posts viewed, interactions)</li>
                 <li>Cookies and similar tracking technologies</li>
             </ul>
 
             <h2>3. How We Use Your Information</h2>
-            <p>We use your information for various purposes, including to:</p>
+            <p>We use your information to:</p>
             <ul>
-                <li>Provide, maintain, and improve our platform</li>
-                <li>Process your transactions</li>
-                <li>Communicate with you about updates and promotions</li>
-                <li>Personalize your experience and content</li>
-                <li>Analyze how you use our platform</li>
-                <li>Protect against fraud and unauthorized access</li>
-                <li>Comply with legal obligations</li>
+                <li>Provide and maintain our social networking services</li>
+                <li>Show you relevant content and friend suggestions</li>
+                <li>Enable social features (likes, comments, shares)</li>
+                <li>Manage friend connections and requests</li>
+                <li>Protect against unauthorized access</li>
+                <li>Improve our platform and user experience</li>
             </ul>
 
             <h2>4. Information Sharing</h2>
-            <p>We may share your information with:</p>
+            <p>Your information is shared as follows:</p>
             <ul>
-                <li>Other users (according to your privacy settings)</li>
-                <li>Service providers (for hosting, analytics, payment processing)</li>
-                <li>Business partners (with your consent)</li>
-                <li>Legal authorities (when required by law)</li>
+                <li>Your posts and profile information are visible to your friends</li>
+                <li>Your likes and comments are visible to friends of the post author</li>
+                <li>Friend suggestions are based on mutual connections</li>
+                <li>We do not sell your personal information to third parties</li>
             </ul>
 
-            <h2>5. Your Choices and Rights</h2>
-            <p>You have several rights regarding your personal information:</p>
+            <h2>5. Your Privacy Controls</h2>
+            <p>You can control your privacy by:</p>
             <ul>
-                <li>Access and update your information</li>
-                <li>Control your privacy settings</li>
-                <li>Delete your account</li>
-                <li>Opt out of marketing communications</li>
-                <li>Request a copy of your data</li>
+                <li>Managing your friend connections</li>
+                <li>Blocking users you don't want to interact with</li>
+                <li>Editing or deleting your posts</li>
+                <li>Updating your profile information</li>
+                <li>Deleting your account</li>
             </ul>
 
             <h2>6. Data Security</h2>
-            <p>We implement appropriate technical and organizational measures to protect your personal information against unauthorized access, alteration, disclosure, or destruction.</p>
+            <p>We implement security measures to protect your information, including:</p>
+            <ul>
+                <li>Secure password storage</li>
+                <li>Protected friend connections</li>
+                <li>Safe post sharing mechanisms</li>
+                <li>Regular security updates</li>
+            </ul>
 
             <h2>7. Changes to This Policy</h2>
             <p>We may update this Privacy Policy from time to time. We will notify you of any changes by posting the new policy on this page and updating the "Last updated" date.</p>
@@ -199,40 +210,61 @@
             <p>By accessing or using Zyntra, you agree to be bound by these Terms of Service and all applicable laws and regulations. If you do not agree with any of these terms, you are prohibited from using or accessing this platform.</p>
 
             <h2>2. Account Registration</h2>
-            <p>To use certain features of our platform, you must register for an account. You agree to provide accurate, current, and complete information during the registration process and to update such information to keep it accurate, current, and complete.</p>
-            <p>You are responsible for safeguarding your password and for all activities that occur under your account. You agree to notify us immediately of any unauthorized use of your account.</p>
+            <p>To use Zyntra, you must register for an account. You agree to:</p>
+            <ul>
+                <li>Provide accurate and complete information</li>
+                <li>Keep your account credentials secure</li>
+                <li>Notify us immediately of any unauthorized access</li>
+                <li>Not share your account with others</li>
+            </ul>
 
             <h2>3. User Content</h2>
-            <p>You retain ownership of the content you post on Zyntra. By posting content, you grant us a non-exclusive, transferable, sub-licensable, royalty-free, worldwide license to use, modify, publicly display, reproduce, and distribute such content on and through our platform.</p>
-            <p>You represent and warrant that:</p>
+            <p>You retain ownership of the content you post on Zyntra. By posting content, you grant us a license to:</p>
             <ul>
-                <li>You own or have the necessary rights to the content you post</li>
-                <li>Your content does not violate the rights of any third party</li>
-                <li>Your content complies with these Terms and applicable laws</li>
+                <li>Display your posts to your friends</li>
+                <li>Enable social features (likes, comments, shares)</li>
+                <li>Show your content in friend feeds</li>
+                <li>Store and manage your content</li>
+            </ul>
+            <p>You are responsible for ensuring your content:</p>
+            <ul>
+                <li>Does not violate any laws</li>
+                <li>Is not harmful or offensive</li>
+                <li>Does not infringe on others' rights</li>
+                <li>Complies with our community guidelines</li>
             </ul>
 
-            <h2>4. Prohibited Conduct</h2>
+            <h2>4. Social Features</h2>
+            <p>Our platform includes the following social features:</p>
+            <ul>
+                <li>Friend connections and requests</li>
+                <li>Post creation and sharing</li>
+                <li>Likes and comments</li>
+                <li>User blocking</li>
+            </ul>
+            <p>You agree to use these features responsibly and respectfully.</p>
+
+            <h2>5. Prohibited Conduct</h2>
             <p>You agree not to:</p>
             <ul>
-                <li>Use our platform for any illegal purpose</li>
-                <li>Post content that is harmful, abusive, threatening, or harassing</li>
-                <li>Impersonate any person or entity</li>
-                <li>Use automated means to access or collect data from our platform</li>
-                <li>Interfere with or disrupt our platform or servers</li>
-                <li>Sell, trade, or transfer your account to another party</li>
+                <li>Post harmful or offensive content</li>
+                <li>Harass or bully other users</li>
+                <li>Impersonate others</li>
+                <li>Spam or send unwanted friend requests</li>
+                <li>Attempt to access others' accounts</li>
             </ul>
 
-            <h2>5. Intellectual Property</h2>
-            <p>Our platform and its original content, features, and functionality are owned by Zyntra and are protected by international copyright, trademark, patent, trade secret, and other intellectual property laws.</p>
+            <h2>6. Account Termination</h2>
+            <p>We may terminate or suspend your account if you:</p>
+            <ul>
+                <li>Violate these Terms of Service</li>
+                <li>Engage in prohibited conduct</li>
+                <li>Create multiple accounts</li>
+                <li>Abuse our social features</li>
+            </ul>
 
-            <h2>6. Termination</h2>
-            <p>We may terminate or suspend your account and access to our platform immediately, without prior notice or liability, for any reason, including if you breach these Terms.</p>
-
-            <h2>7. Limitation of Liability</h2>
-            <p>In no event shall Zyntra be liable for any indirect, incidental, special, consequential, or punitive damages resulting from your use of or inability to use our platform.</p>
-
-            <h2>8. Changes to Terms</h2>
-            <p>We reserve the right to modify or replace these Terms at any time. We will notify you of any changes by posting the new Terms on this page and updating the "Last updated" date.</p>
+            <h2>7. Changes to Terms</h2>
+            <p>We reserve the right to modify these Terms at any time. We will notify you of any changes by posting the new Terms on this page and updating the "Last updated" date.</p>
 
             <button class="back-button" onclick="window.history.back()">Back to Zyntra</button>
         </div>
@@ -270,44 +302,55 @@
             </div>
             
             <div class="accordion">
+                <div class="accordion-header" onclick="toggleAccordion(this)">How do I manage my posts?</div>
+                <div class="accordion-content">
+                    <p>To manage your posts:</p>
+                    <ol>
+                        <li>Find the post you want to manage</li>
+                        <li>Click the three dots menu (⋮) in the top right of the post</li>
+                        <li>Choose to edit or delete the post</li>
+                        <li>For editing, make your changes and click "Save"</li>
+                        <li>For deletion, confirm your choice</li>
+                    </ol>
+                </div>
+            </div>
+            
+            <div class="accordion">
+                <div class="accordion-header" onclick="toggleAccordion(this)">How do I block someone?</div>
+                <div class="accordion-content">
+                    <p>To block a user:</p>
+                    <ol>
+                        <li>Go to their profile page</li>
+                        <li>Click the three dots menu (⋮)</li>
+                        <li>Select "Block User"</li>
+                        <li>Confirm your choice</li>
+                        <li>Blocked users won't be able to see your content or interact with you</li>
+                    </ol>
+                </div>
+            </div>
+            
+            <div class="accordion">
+                <div class="accordion-header" onclick="toggleAccordion(this)">How do I interact with posts?</div>
+                <div class="accordion-content">
+                    <p>You can interact with posts in several ways:</p>
+                    <ol>
+                        <li>Click the heart icon to like a post</li>
+                        <li>Click the comment icon to view or add comments</li>
+                        <li>Click the share icon to share the post</li>
+                        <li>Use the three dots menu (⋮) to report inappropriate content</li>
+                    </ol>
+                </div>
+            </div>
+            
+            <div class="accordion">
                 <div class="accordion-header" onclick="toggleAccordion(this)">How do I update my profile?</div>
                 <div class="accordion-content">
                     <p>To update your profile:</p>
                     <ol>
-                        <li>Click on "Profile" in the left sidebar</li>
-                        <li>Click "View Profile" to see your current profile</li>
-                        <li>Click "Edit Profile" to make changes</li>
-                        <li>Update your information such as profile picture, bio, or personal details</li>
-                        <li>Click "Save Changes" to update your profile</li>
-                    </ol>
-                </div>
-            </div>
-            
-            <div class="accordion">
-                <div class="accordion-header" onclick="toggleAccordion(this)">How do I manage my privacy settings?</div>
-                <div class="accordion-content">
-                    <p>To manage your privacy settings:</p>
-                    <ol>
                         <li>Click on your profile picture in the top right</li>
-                        <li>Select "Settings & Privacy" from the dropdown menu</li>
-                        <li>Click "Privacy Settings"</li>
-                        <li>Adjust who can see your posts, profile information, and friend list</li>
+                        <li>Select "Edit Profile"</li>
+                        <li>Update your profile picture, bio, or location</li>
                         <li>Click "Save Changes" when done</li>
-                    </ol>
-                </div>
-            </div>
-            
-            <div class="accordion">
-                <div class="accordion-header" onclick="toggleAccordion(this)">How do I delete my account?</div>
-                <div class="accordion-content">
-                    <p>To delete your account:</p>
-                    <ol>
-                        <li>Click on your profile picture in the top right</li>
-                        <li>Select "Settings & Privacy" from the dropdown menu</li>
-                        <li>Click "Account Settings"</li>
-                        <li>Scroll down and click "Delete Account"</li>
-                        <li>Follow the prompts to confirm deletion</li>
-                        <li>Note that account deletion is permanent and cannot be undone</li>
                     </ol>
                 </div>
             </div>

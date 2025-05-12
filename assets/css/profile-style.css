@@ -7,6 +7,7 @@
     --color-4: #1A1347;  /* Deep purple/indigo */
     --color-5: #5D479A;  /* Bright purple */
     --color-6: #F187EA;  /* Pink/magenta */
+    --card-bg: #2A2056;
     --white: #FFFFFF;
     --success: #42B72A;
     --danger: #FF3B30;
@@ -72,7 +73,7 @@
 
 /* Profile Card */
 .profile-card {
-    background: var(--color-4);
+    background: var(--card-bg);
     border-radius: 20px;
     padding: 2rem;
     margin-bottom: 2rem;
@@ -82,7 +83,7 @@
 
 .profile-header {
     text-align: center;
-    background-color: var(--color-4) !important;
+    background-color: var(--card-bg) !important;
     padding-bottom: 0 !important;
 }
 
@@ -128,7 +129,7 @@
 
 .stat-item {
     padding: 1rem;
-    background: var(--color-4);
+    background: var(--card-bg);
     border-radius: 15px;
     transition: transform 0.3s ease;
 }
@@ -203,7 +204,7 @@
 
 /* Friends Section */
 .friends-section {
-    background: var(--color-4);
+    background: var(--card-bg);
     border-radius: 20px;
     padding: 2rem;
     margin-bottom: 2rem;
@@ -231,7 +232,7 @@
 }
 
 .friend-card {
-    background: var(--color-4);
+    background: var(--card-bg);
     border-radius: 15px;
     padding: 1rem;
     text-align: center;
@@ -266,7 +267,7 @@
 
 /* Create Post Section */
 .create-post-section {
-    background: var(--color-4);
+    background: var(--card-bg);
     border-radius: 20px;
     padding: 2rem;
     margin-bottom: 2rem;
@@ -350,7 +351,7 @@
 }
 
 .card.post {
-    background: var(--color-4);
+    background: var(--card-bg);
     border: none;
     border-radius: 15px;
     margin-bottom: 1.5rem;
@@ -407,8 +408,8 @@
 }
 
 .dropdown-menu {
-    background: var(--color-4);
-    border: 1px solid var(--color-1);
+    background: var(--color-4)!important;
+    border: 1px solid var(--color-1)!important;
     border-radius: 10px;
     padding: 0.5rem;
     min-width: 150px;
@@ -416,15 +417,16 @@
 }
 
 .dropdown-item {
-    color: var(--white);
+    background: var(--color-4) !important;
+    color: var(--white) !important;
     padding: 0.5rem 1rem;
     border-radius: 5px;
     transition: all 0.3s ease;
 }
 
 .dropdown-item:hover {
-    background: var(--color-1);
-    color: var(--white);
+    background: var(--color-5) !important;
+    color: var(--color-6) !important;
 }
 
 .post-content {
@@ -474,7 +476,7 @@
 .share-btn {
     background: none;
     border: none;
-    color: var(--color-3);
+    color: var(--color-3) !important;
     display: flex;
     align-items: center;
     gap: 0.5rem;
@@ -513,7 +515,9 @@
 .load-comments:hover {
     color: var(--white);
 }
-
+.comment{
+color: white;
+}
 .comment-form {
     margin-top: 1rem;
 }
@@ -547,7 +551,58 @@
 .btn-outline:hover {
     color: var(--white);
 }
+.back-to-home-btn {
+    background: linear-gradient(90deg, var(--color-4), var(--color-1));
+    border: none;
+    border-radius: 8px;
+    color: white;
+    padding: 0.5rem 1.5rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+.back-to-home-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(241, 135, 234, 0.3);
+}
+.toggle-replies-btn {
+    /* Keep your existing styles */
+    background: none;
+    border: none;
+    color: var(--color-6);
+    font-size: 0.9rem;
+    cursor: pointer;
+    margin: 5px 0 5px 35px;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    font-weight: 500;
+    padding: 10px;
+    /* Add these new properties */
+    display: inline-flex;    /* Better than inline-block */
+    align-items: center;     /* Vertical centering */
+    max-width: 200px;        /* Adjust as needed */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding: 4px 8px;        /* Add some padding */
+    line-height: 1.2;        /* Better than 0 for readability */
+}
 
+.toggle-replies-btn:hover {
+    background: var(--hover-bg);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(241, 135, 234, 0.15);
+}
+
+.toggle-replies-btn:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(241, 135, 234, 0.25);
+}
+.reply-input{
+    margin-bottom: 10px;
+}
+.reply-form-inner .reply-input::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+}
 /* Responsive Design */
 @media (max-width: 992px) {
     .profile-stats {

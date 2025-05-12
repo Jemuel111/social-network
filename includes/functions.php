@@ -53,19 +53,27 @@ function get_feed_posts($user_id, $limit = 10, $offset = 0) {
                 (SELECT COUNT(*) FROM posts WHERE shared_post_id = p.post_id) as share_count
               FROM posts p
               JOIN users u ON p.user_id = u.user_id
-              WHERE p.user_id = ? 
-                 OR p.user_id IN (
+              WHERE (p.user_id = ?) 
+                 OR (p.visibility = 'public')
+                 OR (p.visibility = 'friends' AND p.user_id IN (
                     SELECT friend_id FROM friendships 
                     WHERE user_id = ? AND status = 'accepted'
                     UNION
                     SELECT user_id FROM friendships 
                     WHERE friend_id = ? AND status = 'accepted'
-                 )
+                 ))
+                 OR (p.visibility = 'close_friends' AND p.user_id IN (
+                    SELECT friend_id FROM friendships 
+                    WHERE user_id = ? AND status = 'accepted' AND is_close_friend = 1
+                    UNION
+                    SELECT user_id FROM friendships 
+                    WHERE friend_id = ? AND status = 'accepted' AND is_close_friend = 1
+                 ))
               ORDER BY p.created_at DESC
               LIMIT ? OFFSET ?";
               
     $stmt = $conn->prepare($query);
-    $stmt->bind_param("iiiii", $user_id, $user_id, $user_id, $limit, $offset);
+    $stmt->bind_param("iiiiiii", $user_id, $user_id, $user_id, $user_id, $user_id, $limit, $offset);
     $stmt->execute();
     $result = $stmt->get_result();
     

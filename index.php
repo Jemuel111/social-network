@@ -47,10 +47,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['post_content'])) {
 
     // Insert post if no file errors
     if (empty($post_message)) {
-        $stmt = $conn->prepare("INSERT INTO posts (user_id, content, image) VALUES (?, ?, ?)");
-        $stmt->bind_param("iss", $user_id, $content, $image);
+        $visibility = isset($_POST['post_visibility']) ? $_POST['post_visibility'] : 'public';
+        $stmt = $conn->prepare("INSERT INTO posts (user_id, content, image, visibility) VALUES (?, ?, ?, ?)");
+        $stmt->bind_param("isss", $user_id, $content, $image, $visibility);
 
         if ($stmt->execute()) {
+            $post_id = $conn->insert_id;
+            
+            // If specific friends were selected, add them to post_visibility_friends
+            if ($visibility === 'specific' && !empty($_POST['selected_friends'])) {
+                $friend_ids = explode(',', $_POST['selected_friends']);
+                $stmt = $conn->prepare("INSERT INTO post_visibility_friends (post_id, friend_id) VALUES (?, ?)");
+                foreach ($friend_ids as $friend_id) {
+                    $stmt->bind_param("ii", $post_id, $friend_id);
+                    $stmt->execute();
+                }
+            }
+            
             $post_message = "Post created successfully!";
         } else {
             $post_message = "Error creating post: " . $conn->error;
@@ -296,7 +309,7 @@ while ($row = $result->fetch_assoc()) {
             border-radius: 15px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
             margin-bottom: 1.5rem;
-            overflow: hidden;
+            overflow: visible; /* Allow overflow for friend-selector */
         }
         
         .card-header {
@@ -391,6 +404,7 @@ while ($row = $result->fetch_assoc()) {
         /* Post Creation */
         .post-create {
             padding: 1rem;
+            overflow: visible; /* Allow overflow for friend-selector */
         }
         
         .post-input {
@@ -420,6 +434,7 @@ while ($row = $result->fetch_assoc()) {
         
         .post-attachments {
             display: flex;
+            position: relative;
         }
         
         .attachment-btn {
@@ -454,6 +469,30 @@ while ($row = $result->fetch_assoc()) {
         .post-submit:hover {
             transform: translateY(-2px);
             box-shadow: 0 4px 10px rgba(241, 135, 234, 0.3);
+        }
+        
+        /* Visibility Selector Styles */
+        .visibility-select {
+            background: var(--input-bg);
+            border: 1px solid #4A3F85;
+            border-radius: 8px;
+            color: white;
+            padding: 0.5rem;
+            margin-left: 0.5rem;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .visibility-select:hover {
+            background: var(--hover-bg);
+            border-color: var(--accent);
+        }
+        
+        .visibility-select option {
+            background: var(--card-bg);
+            color: white;
         }
         
         /* Posts */
@@ -785,6 +824,133 @@ while ($row = $result->fetch_assoc()) {
         .reply-form-inner .reply-input::placeholder {
             color: rgba(255, 255, 255, 0.5);
         }
+        .friend-selector {
+            position: absolute;
+            background: var(--card-bg);
+            border: 1px solid #4A3F85;
+            border-radius: 8px;
+            padding: 10px;
+            margin-top: 5px;
+            width: 300px;
+            z-index: 9999;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            right: 0;
+        }
+
+        .friend-search {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            background: var(--input-bg);
+            border: 1px solid #4A3F85;
+            border-radius: 4px;
+            color: white;
+        }
+
+        .friend-list {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .friend-item {
+            display: flex;
+            align-items: center;
+            padding: 8px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        .friend-item:hover {
+            background: var(--hover-bg);
+        }
+
+        .friend-item img {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        .selected-friends {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-bottom: 10px;
+        }
+
+        .selected-friend {
+            display: flex;
+            align-items: center;
+            background: var(--input-bg);
+            padding: 4px 8px;
+            border-radius: 15px;
+            font-size: 0.9rem;
+        }
+
+        .selected-friend img {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            margin-right: 5px;
+        }
+
+        .remove-friend {
+            margin-left: 5px;
+            cursor: pointer;
+            color: var(--accent);
+        }
+
+        .privacy-indicator {
+            margin-left: 8px;
+            color: var(--accent);
+            font-size: 0.9em;
+        }
+
+        .privacy-indicator i {
+            transition: transform 0.2s ease;
+        }
+
+        .privacy-indicator:hover i {
+            transform: scale(1.2);
+        }
+
+        /* Update the visibility select options to include icons */
+        .visibility-select option[value="public"]::before {
+            content: "\f0ac"; /* globe icon */
+            font-family: "Font Awesome 5 Free";
+            margin-right: 8px;
+        }
+
+        .visibility-select option[value="friends"]::before {
+            content: "\f500"; /* user-friends icon */
+            font-family: "Font Awesome 5 Free";
+            margin-right: 8px;
+        }
+
+        .visibility-select option[value="specific"]::before {
+            content: "\f502"; /* user-lock icon */
+            font-family: "Font Awesome 5 Free";
+            margin-right: 8px;
+        }
+
+        /* Update the edit privacy modal select options */
+        #edit-visibility-select option[value="public"]::before {
+            content: "\f0ac";
+            font-family: "Font Awesome 5 Free";
+            margin-right: 8px;
+        }
+
+        #edit-visibility-select option[value="friends"]::before {
+            content: "\f500";
+            font-family: "Font Awesome 5 Free";
+            margin-right: 8px;
+        }
+
+        #edit-visibility-select option[value="specific"]::before {
+            content: "\f502";
+            font-family: "Font Awesome 5 Free";
+            margin-right: 8px;
+        }
     </style>
 </head>
 <body>
@@ -912,6 +1078,16 @@ while ($row = $result->fetch_assoc()) {
                                             <i class="bi bi-image"></i>
                                         </label>
                                         <input type="file" id="post_image" name="post_image" accept="image/*">
+                                        <select name="post_visibility" class="form-select visibility-select" id="visibility-select">
+                                            <option value="public">Public</option>
+                                            <option value="friends">Friends Only</option>
+                                            <option value="specific">Specific Friends</option>
+                                        </select>
+                                        <div id="friend-selector" class="friend-selector" style="display: none;">
+                                            <div class="selected-friends"></div>
+                                            <input type="text" class="friend-search" placeholder="Search friends...">
+                                            <div class="friend-list"></div>
+                                        </div>
                                     </div>
                                     <button type="submit" class="post-submit">Post</button>
                                 </div>
@@ -945,13 +1121,26 @@ while ($row = $result->fetch_assoc()) {
                                             <img src="assets/images/<?php echo $post['profile_pic']; ?>" alt="Sharer" class="post-avatar">
                                             <div class="post-user flex-grow-1">
                                                 <h6 class="post-username"><?php echo $post['full_name']; ?> <span style='font-weight:400;color:#F187EA;'>shared</span> <?php echo $original ? $original['full_name'] : '[Deleted]'; ?>'s post</h6>
-                                                <p class="post-time">@<?php echo $post['username']; ?> · <?php echo format_date($post['created_at']); ?></p>
+                                                <p class="post-time">
+                                                    @<?php echo $post['username']; ?> · 
+                                                    <?php echo format_date($post['created_at']); ?>
+                                                    <span class="privacy-indicator" title="<?php echo ucfirst($post['visibility']); ?>">
+                                                        <?php if ($post['visibility'] === 'public'): ?>
+                                                            <i class="fas fa-globe"></i>
+                                                        <?php elseif ($post['visibility'] === 'friends'): ?>
+                                                            <i class="fas fa-user-friends"></i>
+                                                        <?php else: ?>
+                                                            <i class="fas fa-user-lock"></i>
+                                                        <?php endif; ?>
+                                                    </span>
+                                                </p>
                                             </div>
                                             <div class="post-menu ms-auto">
                                                 <button class="menu-trigger" type="button" tabindex="0"><i class="fas fa-ellipsis-h"></i></button>
                                                 <div class="dropdown-menu">
                                                     <?php if ($post['user_id'] == $_SESSION['user_id']): ?>
                                                         <button class="dropdown-item edit-post-btn" data-post-id="<?php echo $post['post_id']; ?>">Edit Post</button>
+                                                        <button class="dropdown-item edit-privacy-btn" data-post-id="<?php echo $post['post_id']; ?>" data-visibility="<?php echo $post['visibility']; ?>">Edit Privacy</button>
                                                         <button class="dropdown-item delete-post-btn" data-post-id="<?php echo $post['post_id']; ?>">Delete Post</button>
                                                     <?php else: ?>
                                                         <button class="dropdown-item report-post-btn" data-post-id="<?php echo $post['post_id']; ?>">Report Post</button>
@@ -978,13 +1167,26 @@ while ($row = $result->fetch_assoc()) {
                                             <img src="assets/images/<?php echo $post['profile_pic']; ?>" alt="User" class="post-avatar">
                                             <div class="post-user flex-grow-1">
                                                 <h6 class="post-username"><?php echo $post['full_name']; ?></h6>
-                                                <p class="post-time">@<?php echo $post['username']; ?> · <?php echo format_date($post['created_at']); ?></p>
+                                                <p class="post-time">
+                                                    @<?php echo $post['username']; ?> · 
+                                                    <?php echo format_date($post['created_at']); ?>
+                                                    <span class="privacy-indicator" title="<?php echo ucfirst($post['visibility']); ?>">
+                                                        <?php if ($post['visibility'] === 'public'): ?>
+                                                            <i class="fas fa-globe"></i>
+                                                        <?php elseif ($post['visibility'] === 'friends'): ?>
+                                                            <i class="fas fa-user-friends"></i>
+                                                        <?php else: ?>
+                                                            <i class="fas fa-user-lock"></i>
+                                                        <?php endif; ?>
+                                                    </span>
+                                                </p>
                                             </div>
                                             <div class="post-menu ms-auto">
                                                 <button class="menu-trigger" type="button" tabindex="0"><i class="fas fa-ellipsis-h"></i></button>
                                                 <div class="dropdown-menu">
                                                     <?php if ($post['user_id'] == $_SESSION['user_id']): ?>
                                                         <button class="dropdown-item edit-post-btn" data-post-id="<?php echo $post['post_id']; ?>">Edit Post</button>
+                                                        <button class="dropdown-item edit-privacy-btn" data-post-id="<?php echo $post['post_id']; ?>" data-visibility="<?php echo $post['visibility']; ?>">Edit Privacy</button>
                                                         <button class="dropdown-item delete-post-btn" data-post-id="<?php echo $post['post_id']; ?>">Delete Post</button>
                                                     <?php else: ?>
                                                         <button class="dropdown-item report-post-btn" data-post-id="<?php echo $post['post_id']; ?>">Report Post</button>
@@ -1199,6 +1401,247 @@ while ($row = $result->fetch_assoc()) {
         });
         document.addEventListener('click', function() {
             document.querySelectorAll('.post-menu').forEach(function(menu) { menu.classList.remove('open'); });
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const visibilitySelect = document.getElementById('visibility-select');
+            const friendSelector = document.getElementById('friend-selector');
+            const friendSearch = document.querySelector('.friend-search');
+            const friendList = document.querySelector('.friend-list');
+            const selectedFriends = document.querySelector('.selected-friends');
+            let selectedFriendIds = new Set();
+
+            // Show/hide friend selector based on visibility selection
+            visibilitySelect.addEventListener('change', function() {
+                if (this.value === 'specific') {
+                    friendSelector.style.display = 'block';
+                    loadFriends();
+                } else {
+                    friendSelector.style.display = 'none';
+                }
+            });
+
+            // Hide friend selector when clicking outside
+            document.addEventListener('mousedown', function(event) {
+                if (
+                    friendSelector.style.display === 'block' &&
+                    !friendSelector.contains(event.target) &&
+                    event.target !== visibilitySelect
+                ) {
+                    friendSelector.style.display = 'none';
+                }
+            });
+
+            // Load friends for selection
+            function loadFriends() {
+                fetch('ajax/get_friends.php')
+                    .then(response => response.json())
+                    .then(friends => {
+                        friendList.innerHTML = friends.map(friend => `
+                            <div class="friend-item" data-id="${friend.user_id}">
+                                <img src="assets/images/${friend.profile_pic}" alt="${friend.username}">
+                                <span>${friend.username}</span>
+                            </div>
+                        `).join('');
+
+                        // Add click handlers
+                        document.querySelectorAll('.friend-item').forEach(item => {
+                            item.addEventListener('click', function() {
+                                const friendId = this.dataset.id;
+                                if (!selectedFriendIds.has(friendId)) {
+                                    selectedFriendIds.add(friendId);
+                                    const friend = friends.find(f => f.user_id == friendId);
+                                    selectedFriends.innerHTML += `
+                                        <div class="selected-friend" data-id="${friendId}">
+                                            <img src="assets/images/${friend.profile_pic}" alt="${friend.username}">
+                                            ${friend.username}
+                                            <span class="remove-friend" onclick="removeFriend(${friendId})">&times;</span>
+                                        </div>
+                                    `;
+                                }
+                            });
+                        });
+                    });
+            }
+
+            // Search friends
+            friendSearch.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase();
+                document.querySelectorAll('.friend-item').forEach(item => {
+                    const username = item.querySelector('span').textContent.toLowerCase();
+                    item.style.display = username.includes(searchTerm) ? 'flex' : 'none';
+                });
+            });
+
+            // Remove friend from selection
+            window.removeFriend = function(friendId) {
+                selectedFriendIds.delete(friendId);
+                document.querySelector(`.selected-friend[data-id="${friendId}"]`).remove();
+            };
+
+            // Add hidden input for selected friends before form submission
+            document.querySelector('form').addEventListener('submit', function(e) {
+                if (visibilitySelect.value === 'specific') {
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = 'selected_friends';
+                    input.value = Array.from(selectedFriendIds).join(',');
+                    this.appendChild(input);
+                }
+            });
+        });
+
+        // Edit Privacy Modal
+        const editPrivacyModal = `
+            <div class="modal fade" id="editPrivacyModal" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Edit Post Privacy</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <select class="form-select mb-3" id="edit-visibility-select">
+                                <option value="public">Public</option>
+                                <option value="friends">Friends Only</option>
+                                <option value="specific">Specific Friends</option>
+                            </select>
+                            <div id="edit-friend-selector" class="friend-selector" style="display: none;">
+                                <div class="selected-friends"></div>
+                                <input type="text" class="friend-search" placeholder="Search friends...">
+                                <div class="friend-list"></div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="button" class="btn btn-primary" id="save-privacy-btn">Save Changes</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        // Add modal to body
+        document.body.insertAdjacentHTML('beforeend', editPrivacyModal);
+
+        // Edit Privacy functionality
+        let currentPostId = null;
+        let selectedFriendIds = new Set();
+
+        document.querySelectorAll('.edit-privacy-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                currentPostId = this.dataset.postId;
+                const currentVisibility = this.dataset.visibility;
+                
+                const modal = new bootstrap.Modal(document.getElementById('editPrivacyModal'));
+                const visibilitySelect = document.getElementById('edit-visibility-select');
+                const friendSelector = document.getElementById('edit-friend-selector');
+                
+                visibilitySelect.value = currentVisibility;
+                if (currentVisibility === 'specific') {
+                    friendSelector.style.display = 'block';
+                    loadFriendsForEdit(currentPostId);
+                } else {
+                    friendSelector.style.display = 'none';
+                }
+                
+                modal.show();
+            });
+        });
+
+        // Handle visibility change in edit modal
+        document.getElementById('edit-visibility-select').addEventListener('change', function() {
+            const friendSelector = document.getElementById('edit-friend-selector');
+            if (this.value === 'specific') {
+                friendSelector.style.display = 'block';
+                loadFriendsForEdit(currentPostId);
+            } else {
+                friendSelector.style.display = 'none';
+            }
+        });
+
+        // Load friends for edit modal
+        function loadFriendsForEdit(postId) {
+            fetch('ajax/get_friends.php')
+                .then(response => response.json())
+                .then(friends => {
+                    const friendList = document.querySelector('#edit-friend-selector .friend-list');
+                    const selectedFriends = document.querySelector('#edit-friend-selector .selected-friends');
+                    
+                    // Get currently selected friends for this post
+                    fetch(`ajax/get_post_friends.php?post_id=${postId}`)
+                        .then(response => response.json())
+                        .then(selectedIds => {
+                            selectedFriendIds = new Set(selectedIds);
+                            
+                            friendList.innerHTML = friends.map(friend => `
+                                <div class="friend-item ${selectedFriendIds.has(friend.user_id) ? 'selected' : ''}" 
+                                     data-id="${friend.user_id}">
+                                    <img src="assets/images/${friend.profile_pic}" alt="${friend.username}">
+                                    <span>${friend.username}</span>
+                                </div>
+                            `).join('');
+
+                            // Add selected friends to the selected-friends div
+                            selectedFriends.innerHTML = friends
+                                .filter(friend => selectedFriendIds.has(friend.user_id))
+                                .map(friend => `
+                                    <div class="selected-friend" data-id="${friend.user_id}">
+                                        <img src="assets/images/${friend.profile_pic}" alt="${friend.username}">
+                                        ${friend.username}
+                                        <span class="remove-friend" onclick="removeFriend(${friend.user_id})">&times;</span>
+                                    </div>
+                                `).join('');
+
+                            // Add click handlers
+                            document.querySelectorAll('#edit-friend-selector .friend-item').forEach(item => {
+                                item.addEventListener('click', function() {
+                                    const friendId = this.dataset.id;
+                                    if (!selectedFriendIds.has(friendId)) {
+                                        selectedFriendIds.add(friendId);
+                                        const friend = friends.find(f => f.user_id == friendId);
+                                        selectedFriends.innerHTML += `
+                                            <div class="selected-friend" data-id="${friendId}">
+                                                <img src="assets/images/${friend.profile_pic}" alt="${friend.username}">
+                                                ${friend.username}
+                                                <span class="remove-friend" onclick="removeFriend(${friendId})">&times;</span>
+                                            </div>
+                                        `;
+                                        this.classList.add('selected');
+                                    }
+                                });
+                            });
+                        });
+                });
+        }
+
+        // Save privacy changes
+        document.getElementById('save-privacy-btn').addEventListener('click', function() {
+            const visibility = document.getElementById('edit-visibility-select').value;
+            const data = {
+                post_id: currentPostId,
+                visibility: visibility
+            };
+
+            if (visibility === 'specific') {
+                data.selected_friends = Array.from(selectedFriendIds).join(',');
+            }
+
+            fetch('ajax/update_post_visibility.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload(); // Refresh to show updated visibility
+                } else {
+                    alert('Failed to update privacy settings');
+                }
+            });
         });
     </script>
 </body>
