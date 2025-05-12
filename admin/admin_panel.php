@@ -240,6 +240,18 @@ document.addEventListener('DOMContentLoaded', function() {
     setupTableSearch('users-table', 'users-search-input');
     setupTableSearch('posts-table', 'posts-search-input');
 });
+document.addEventListener('DOMContentLoaded', function() {
+    fetch('ajax/get_report_count.php')
+        .then(response => response.json())
+        .then(data => {
+            const badge = document.getElementById('report-count-badge');
+            if (badge && data.count > 0) {
+                badge.textContent = data.count;
+            } else if (badge) {
+                badge.style.display = 'none';
+            }
+        });
+});
 </script>
 <?php
     require_once '../includes/admin_footer.php';

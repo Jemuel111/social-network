@@ -53,13 +53,19 @@ function get_feed_posts($user_id, $limit = 10, $offset = 0) {
                 (SELECT COUNT(*) FROM posts WHERE shared_post_id = p.post_id) as share_count
               FROM posts p
               JOIN users u ON p.user_id = u.user_id
-              WHERE (p.user_id = ? 
-                 OR p.user_id IN (SELECT friend_id FROM friendships WHERE user_id = ? AND status = 'accepted'))
+              WHERE p.user_id = ? 
+                 OR p.user_id IN (
+                    SELECT friend_id FROM friendships 
+                    WHERE user_id = ? AND status = 'accepted'
+                    UNION
+                    SELECT user_id FROM friendships 
+                    WHERE friend_id = ? AND status = 'accepted'
+                 )
               ORDER BY p.created_at DESC
               LIMIT ? OFFSET ?";
               
     $stmt = $conn->prepare($query);
-    $stmt->bind_param("iiii", $user_id, $user_id, $limit, $offset);
+    $stmt->bind_param("iiiii", $user_id, $user_id, $user_id, $limit, $offset);
     $stmt->execute();
     $result = $stmt->get_result();
     
@@ -204,6 +210,14 @@ function has_user_shared_post($user_id, $post_id) {
     $result = $stmt->get_result();
     $row = $result->fetch_assoc();
     return $row['count'] > 0;
+}
+
+// Require admin login
+function require_admin_login() {
+    if (!is_logged_in() || $_SESSION['role'] !== 'admin') {
+        header("Location: index.php"); // Redirect to index if not admin
+        exit;
+    }
 }
 
 ?>

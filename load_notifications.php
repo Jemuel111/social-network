@@ -6,13 +6,10 @@ require_once 'includes/functions.php';
 require_login();
 
 $user_id = $_SESSION['user_id'];
-$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-$limit = 15;
-$offset = ($page - 1) * $limit;
 
-$query = "SELECT * FROM notifications WHERE user_id = ? ORDER BY created_at DESC LIMIT ? OFFSET ?";
+$query = "SELECT * FROM notifications WHERE user_id = ? ORDER BY created_at DESC";
 $stmt = $conn->prepare($query);
-$stmt->bind_param("iii", $user_id, $limit, $offset);
+$stmt->bind_param("i", $user_id);
 $stmt->execute();
 $result = $stmt->get_result();
 $notifications = $result->fetch_all(MYSQLI_ASSOC);

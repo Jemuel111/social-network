@@ -172,40 +172,6 @@ $(document).ready(function() {
         // Start observing the notification
         observer.observe(this);
     });
-
-    // Infinite scroll for notifications
-    let loading = false;
-    let page = 1;
-    const initialCount = <?php echo count($notifications); ?>;
-    $(window).scroll(function() {
-        if ($(window).scrollTop() + $(window).height() > $(document).height() - 200 && !loading) {
-            loadMoreNotifications();
-        }
-    });
-
-    function loadMoreNotifications() {
-        loading = true;
-        page++;
-        $.ajax({
-            url: 'load_notifications.php',
-            type: 'GET',
-            data: { page: page },
-            success: function(response) {
-                if (response.trim() !== '') {
-                    $('.notification-list').append(response);
-                    loading = false;
-                } else {
-                    // No more notifications
-                    $(window).off('scroll');
-                }
-            }
-        });
-    }
-
-    // If we have less than a page of notifications initially, disable scroll loading
-    if (initialCount < 15) { // assuming 15 is your page size
-        $(window).off('scroll');
-    }
 });
 </script>
 </body>

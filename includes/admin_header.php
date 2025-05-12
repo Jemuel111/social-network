@@ -23,5 +23,6 @@
         <a href="admin_panel.php">Dashboard</a>
         <a href="manage_users.php">Users</a>
         <a href="manage_posts.php">Posts</a>
-        <a href="../logout.php" class="btn btn-danger">Logout</a>
+        <a href="manage_reports.php">Reports <span id="report-count-badge" class="badge bg-danger"></span></a>
+        <a href="../logout.php" class="btn btn-danger">Logout</a> 
     </div>

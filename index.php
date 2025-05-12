@@ -941,15 +941,23 @@ while ($row = $result->fetch_assoc()) {
                                         $orig_result = $orig_stmt->get_result();
                                         $original = $orig_result->fetch_assoc();
                                         ?>
-                                        <div class="post-header">
+                                        <div class="post-header d-flex align-items-center">
                                             <img src="assets/images/<?php echo $post['profile_pic']; ?>" alt="Sharer" class="post-avatar">
-                                            <div class="post-user">
+                                            <div class="post-user flex-grow-1">
                                                 <h6 class="post-username"><?php echo $post['full_name']; ?> <span style='font-weight:400;color:#F187EA;'>shared</span> <?php echo $original ? $original['full_name'] : '[Deleted]'; ?>'s post</h6>
                                                 <p class="post-time">@<?php echo $post['username']; ?> · <?php echo format_date($post['created_at']); ?></p>
                                             </div>
-                                            <button class="post-menu">
-                                                <i class="bi bi-three-dots"></i>
-                                            </button>
+                                            <div class="post-menu ms-auto">
+                                                <button class="menu-trigger" type="button" tabindex="0"><i class="fas fa-ellipsis-h"></i></button>
+                                                <div class="dropdown-menu">
+                                                    <?php if ($post['user_id'] == $_SESSION['user_id']): ?>
+                                                        <button class="dropdown-item edit-post-btn" data-post-id="<?php echo $post['post_id']; ?>">Edit Post</button>
+                                                        <button class="dropdown-item delete-post-btn" data-post-id="<?php echo $post['post_id']; ?>">Delete Post</button>
+                                                    <?php else: ?>
+                                                        <button class="dropdown-item report-post-btn" data-post-id="<?php echo $post['post_id']; ?>">Report Post</button>
+                                                    <?php endif; ?>
+                                                </div>
+                                            </div>
                                         </div>
                                         <div class="post-content" style="background:rgba(255,255,255,0.05);border-radius:10px;padding:10px;">
                                             <?php if ($original): ?>
@@ -966,15 +974,23 @@ while ($row = $result->fetch_assoc()) {
                                             <?php endif; ?>
                                         </div>
                                     <?php else: // Normal post ?>
-                                        <div class="post-header">
+                                        <div class="post-header d-flex align-items-center">
                                             <img src="assets/images/<?php echo $post['profile_pic']; ?>" alt="User" class="post-avatar">
-                                            <div class="post-user">
+                                            <div class="post-user flex-grow-1">
                                                 <h6 class="post-username"><?php echo $post['full_name']; ?></h6>
                                                 <p class="post-time">@<?php echo $post['username']; ?> · <?php echo format_date($post['created_at']); ?></p>
                                             </div>
-                                            <button class="post-menu">
-                                                <i class="bi bi-three-dots"></i>
-                                            </button>
+                                            <div class="post-menu ms-auto">
+                                                <button class="menu-trigger" type="button" tabindex="0"><i class="fas fa-ellipsis-h"></i></button>
+                                                <div class="dropdown-menu">
+                                                    <?php if ($post['user_id'] == $_SESSION['user_id']): ?>
+                                                        <button class="dropdown-item edit-post-btn" data-post-id="<?php echo $post['post_id']; ?>">Edit Post</button>
+                                                        <button class="dropdown-item delete-post-btn" data-post-id="<?php echo $post['post_id']; ?>">Delete Post</button>
+                                                    <?php else: ?>
+                                                        <button class="dropdown-item report-post-btn" data-post-id="<?php echo $post['post_id']; ?>">Report Post</button>
+                                                    <?php endif; ?>
+                                                </div>
+                                            </div>
                                         </div>
                                         <div class="post-content">
                                             <p><?php echo nl2br(htmlspecialchars($post['content'])); ?></p>
@@ -1070,6 +1086,7 @@ while ($row = $result->fetch_assoc()) {
     </div>
 
     <!-- Bootstrap Bundle with Popper -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script src="assets/js/main.js"></script>
     <script>
@@ -1170,6 +1187,18 @@ while ($row = $result->fetch_assoc()) {
                     searchResults.style.display = 'none';
                 }
             });
+        });
+
+        // Dropdown menu toggle for post-menu
+        document.querySelectorAll('.post-menu .menu-trigger').forEach(function(btn) {
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                document.querySelectorAll('.post-menu').forEach(function(menu) { menu.classList.remove('open'); });
+                this.closest('.post-menu').classList.toggle('open');
+            });
+        });
+        document.addEventListener('click', function() {
+            document.querySelectorAll('.post-menu').forEach(function(menu) { menu.classList.remove('open'); });
         });
     </script>
 </body>

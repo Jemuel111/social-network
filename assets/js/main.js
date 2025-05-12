@@ -38,47 +38,166 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Initialize notification system
-    initializeNotifications();
+    if (typeof initializeNotifications === 'function') {
+        initializeNotifications();
+    }
 
     // Messenger mobile navigation
-    setupMessengerMobileNav();
+    if (typeof setupMessengerMobileNav === 'function') {
+        setupMessengerMobileNav();
+    }
 
     // Event delegation for friend links
-    document.getElementById('chatList').addEventListener('click', function(e) {
-        const link = e.target.closest('.friend-link');
-        if (link) {
-            e.preventDefault();
-            const url = link.getAttribute('href');
-            const params = new URLSearchParams(url.split('?')[1]);
-            const friendId = params.get('friend_id');
-            loadChat(friendId);
-            // Mobile slide-in
-            if (window.innerWidth <= 768) {
-                document.getElementById('chatWindow').classList.add('active');
-                document.getElementById('chatList').classList.add('hide');
+    var chatList = document.getElementById('chatList');
+    if (chatList) {
+        chatList.addEventListener('click', function(e) {
+            const link = e.target.closest('.friend-link');
+            if (link) {
+                e.preventDefault();
+                const url = link.getAttribute('href');
+                const params = new URLSearchParams(url.split('?')[1]);
+                const friendId = params.get('friend_id');
+                loadChat(friendId);
+                // Mobile slide-in
+                if (window.innerWidth <= 768) {
+                    document.getElementById('chatWindow').classList.add('active');
+                    document.getElementById('chatList').classList.add('hide');
+                }
             }
-        }
-    });
+        });
+    }
 
     // Back button (event delegation, since chat is loaded dynamically)
-    document.getElementById('chatWindow').addEventListener('click', function(e) {
-        if (e.target.classList.contains('back-btn-unique')) {
-            if (window.innerWidth <= 768) {
-                document.getElementById('chatWindow').classList.remove('active');
-                document.getElementById('chatList').classList.remove('hide');
+    var chatWindow = document.getElementById('chatWindow');
+    if (chatWindow) {
+        chatWindow.addEventListener('click', function(e) {
+            if (e.target.classList.contains('back-btn-unique')) {
+                if (window.innerWidth <= 768) {
+                    document.getElementById('chatWindow').classList.remove('active');
+                    document.getElementById('chatList').classList.remove('hide');
+                }
             }
-        }
-    });
+        });
+    }
 
     // Initial load: if there's a friend_id in the URL, load that chat
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('friend_id')) {
         loadChat(urlParams.get('friend_id'));
         if (window.innerWidth <= 768) {
-            document.getElementById('chatWindow').classList.add('active');
-            document.getElementById('chatList').classList.add('hide');
+            var chatWindow = document.getElementById('chatWindow');
+            var chatList = document.getElementById('chatList');
+            if (chatWindow && chatList) {
+                chatWindow.classList.add('active');
+                chatList.classList.add('hide');
+            }
         }
     }
+
+    // Dropdown menu toggle for post-menu
+    document.querySelectorAll('.post-menu .menu-trigger').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            document.querySelectorAll('.post-menu').forEach(function(menu) { menu.classList.remove('open'); });
+            this.closest('.post-menu').classList.toggle('open');
+        });
+    });
+    document.addEventListener('click', function() {
+        document.querySelectorAll('.post-menu').forEach(function(menu) { menu.classList.remove('open'); });
+    });
+
+    // Post menu dropdown actions
+    document.querySelectorAll('.post-menu .dropdown-item').forEach(function(item) {
+        item.addEventListener('click', function(e) {
+            e.preventDefault();
+            const postId = this.getAttribute('data-post-id');
+            if (this.classList.contains('edit-post-btn')) {
+                // Show edit modal (to be implemented)
+                alert('Edit post ' + postId);
+            } else if (this.classList.contains('delete-post-btn')) {
+                if (confirm('Are you sure you want to delete this post?')) {
+                    fetch('delete_post.php', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                        body: 'post_id=' + postId
+                    }).then(() => location.reload());
+                }
+            } else if (this.classList.contains('report-post-btn')) {
+                if (confirm('Report this post for inappropriate content?')) {
+                    fetch('ajax/report_post.php', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                        body: 'post_id=' + postId
+                    })
+                    .then(response => response.json())
+                    .then(data => alert(data.message));
+                }
+            }
+        });
+    });
+
+    // Add edit modal to body if not present
+    if (!document.getElementById('editPostModal')) {
+        const modalHtml = `
+        <div class="modal fade" id="editPostModal" tabindex="-1" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title">Edit Post</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <form id="editPostForm">
+                  <input type="hidden" name="post_id" id="editPostId">
+                  <div class="mb-3">
+                    <textarea class="form-control" name="content" id="editPostContent" rows="4" required></textarea>
+                  </div>
+                  <button type="submit" class="btn btn-primary">Save Changes</button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>`;
+        document.body.insertAdjacentHTML('beforeend', modalHtml);
+    }
+
+    // Edit post button click
+    $(document).on('click', '.edit-post-btn', function() {
+        const postId = $(this).data('post-id');
+        const card = $(this).closest('.card, .post');
+        const postContent = card.find('.post-content p').first().text().trim();
+        
+        $('#editPostId').val(postId);
+        $('#editPostContent').val(postContent);
+        $('#editPostModal').modal('show');
+    });
+
+    // Edit post form submit
+    $(document).on('submit', '#editPostForm', function(e) {
+        e.preventDefault();
+        const postId = $('#editPostId').val();
+        const content = $('#editPostContent').val();
+        
+        $.ajax({
+            url: 'edit_post.php',
+            method: 'POST',
+            data: { post_id: postId, content: content },
+            dataType: 'json',
+            success: function(response) {
+                if (response.success) {
+                    // Update the post content in the DOM
+                    $(`.edit-post-btn[data-post-id="${postId}"]`).closest('.card, .post')
+                        .find('.post-content p').first().text(content);
+                    $('#editPostModal').modal('hide');
+                } else {
+                    alert(response.message || 'Failed to update post.');
+                }
+            },
+            error: function() {
+                alert('An error occurred while updating the post.');
+            }
+        });
+    });
 });
 
 function likePost(postId, button) {
@@ -306,6 +425,7 @@ function updateNotificationBadge(count) {
 }
 
 function updateBadgeVisibility(badge, count) {
+    if (!badge) return;
     if (count > 0) {
         badge.textContent = count;
         badge.style.display = 'block';
@@ -330,6 +450,29 @@ function updateNavbarNotificationBadge() {
             }
         });
 }
+
+function updateNavbarMessageBadge() {
+    fetch('ajax/get_unread_messages_count.php')
+        .then(response => response.json())
+        .then(data => {
+            const badge = document.getElementById('navbarMessageBadge');
+            if (!badge) return;
+            if (data.status === 'success') {
+                if (data.count > 0) {
+                    badge.textContent = data.count;
+                    badge.style.display = 'inline-block';
+                } else {
+                    badge.style.display = 'none';
+                }
+            }
+        });
+}
+
+// Update both badges periodically
+setInterval(() => {
+    updateNavbarNotificationBadge();
+    updateNavbarMessageBadge();
+}, 30000); // Update every 30 seconds
 
 // Messenger mobile navigation
 function setupMessengerMobileNav() {

@@ -15,6 +15,12 @@
             </a>
             <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'messages.php' ? 'active' : ''; ?>" href="messages.php">
                 <i class="fas fa-envelope"></i>
+                <?php
+                $unread_messages = get_unread_messages_count($_SESSION['user_id']);
+                if ($unread_messages > 0):
+                ?>
+                <span class="badge bg-danger rounded-pill" id="navbarMessageBadge"><?php echo $unread_messages; ?></span>
+                <?php endif; ?>
             </a>
             <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'notifications.php' ? 'active' : ''; ?>" href="notifications.php">
                 <i class="fas fa-bell"></i>
@@ -46,6 +52,11 @@
                 <li class="nav-item">
                     <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'messages.php' ? 'active' : ''; ?>" href="messages.php">
                         <i class="fas fa-envelope"></i>
+                        <?php
+                        if ($unread_messages > 0):
+                        ?>
+                        <span class="badge bg-danger rounded-pill" id="navbarMessageBadge"><?php echo $unread_messages; ?></span>
+                        <?php endif; ?>
                     </a>
                 </li>
                 <li class="nav-item dropdown">
@@ -61,7 +72,7 @@
                         <li><h6 class="dropdown-header">Notifications</h6></li>
                         <div class="notification-list">
                             <?php
-                            $query = "SELECT * FROM notifications WHERE user_id = ? ORDER BY created_at DESC LIMIT 5";
+                            $query = "SELECT * FROM notifications WHERE user_id = ? ORDER BY created_at DESC LIMIT 15";
                             $stmt = $conn->prepare($query);
                             $stmt->bind_param("i", $_SESSION['user_id']);
                             $stmt->execute();
@@ -78,7 +89,7 @@
                                 <a class="dropdown-item <?php echo $notif['is_read'] ? '' : 'unread'; ?>" href="notifications.php">
                                     <div class="notification-content">
                                         <div class="notification-text"><?php echo htmlspecialchars($notif['message']); ?></div>
-                                        <small style="color: gray;"><?php echo format_date($notif['created_at']); ?></small>
+                                        <small class="text-muted"><?php echo format_date($notif['created_at']); ?></small>
                                     </div>
                                 </a>
                             </li>

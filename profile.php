@@ -174,6 +174,17 @@ $friend_count = $stmt->get_result()->fetch_assoc()['total_friends'];
                                     <h6 class="mb-0"><?php echo htmlspecialchars($user['full_name']); ?></h6>
                                     <small class="text-muted">@<?php echo htmlspecialchars($user['username']); ?> · <?php echo format_date($post['created_at']); ?></small>
                                 </div>
+                                <div class="post-menu ms-auto">
+                                    <button class="menu-trigger" type="button" tabindex="0"><i class="fas fa-ellipsis-h"></i></button>
+                                    <div class="dropdown-menu">
+                                        <?php if ($is_own_profile): ?>
+                                            <button class="dropdown-item edit-post-btn" data-post-id="<?php echo $post['post_id']; ?>">Edit Post</button>
+                                            <button class="dropdown-item delete-post-btn" data-post-id="<?php echo $post['post_id']; ?>">Delete Post</button>
+                                        <?php else: ?>
+                                            <button class="dropdown-item report-post-btn" data-post-id="<?php echo $post['post_id']; ?>">Report Post</button>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <div class="card-body">
@@ -219,8 +230,22 @@ $friend_count = $stmt->get_result()->fetch_assoc()['total_friends'];
     </div>
 </div>
 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
 <script src="assets/js/main.js"></script>
+<script>
+// Dropdown menu toggle
+    document.querySelectorAll('.post-menu .menu-trigger').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            document.querySelectorAll('.post-menu').forEach(function(menu) { menu.classList.remove('open'); });
+            this.closest('.post-menu').classList.toggle('open');
+        });
+    });
+    document.addEventListener('click', function() {
+        document.querySelectorAll('.post-menu').forEach(function(menu) { menu.classList.remove('open'); });
+    });
+</script>
 
 <?php if (!$is_own_profile): ?>
     <?php
