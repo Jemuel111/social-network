@@ -204,7 +204,7 @@ function add_comment($user_id, $post_id, $content, $parent_id = null) {
 // Check if user has shared a post
 function has_user_shared_post($user_id, $post_id) {
     global $conn;
-    $stmt = $conn->prepare("SELECT COUNT(*) as count FROM shares WHERE user_id = ? AND post_id = ?");
+    $stmt = $conn->prepare("SELECT COUNT(*) as count FROM posts WHERE user_id = ? AND shared_post_id = ?");
     $stmt->bind_param("ii", $user_id, $post_id);
     $stmt->execute();
     $result = $stmt->get_result();
