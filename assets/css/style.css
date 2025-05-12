@@ -1019,7 +1019,6 @@
 .post-menu {
     position: relative;
     display: inline-block;
-    float: right;
 }
 .post-menu .menu-trigger {
     background: none;
