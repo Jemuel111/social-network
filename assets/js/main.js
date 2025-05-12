@@ -107,55 +107,97 @@ function likePost(postId, button) {
     .catch(error => console.error('Error:', error));
 }
 
+function renderComments(comments, postId, parent = false) {
+    let html = '';
+    comments.forEach(comment => {
+        html += `<div class="comment${parent ? ' reply' : ''}" data-comment-id="${comment.comment_id}">
+            <div class="comment-main">
+                <img src="assets/images/${comment.profile_pic}" class="rounded-circle me-2" width="32" alt="Profile">
+                <div class="comment-content">
+                    <strong>${comment.full_name}</strong>
+                    <small class="comment-handle"> @${comment.username}</small>
+                    <p class="mb-0">${comment.content}</p>
+                    <small class="comment-time">${comment.created_at}</small>
+                    <div class="comment-actions">
+                        <button class="reply-button" data-post-id="${postId}" data-parent-id="${comment.comment_id}">Reply</button>
+                    </div>
+                    <div class="reply-form" style="display:none;">
+                        <form class="reply-form-inner" data-post-id="${postId}" data-parent-id="${comment.comment_id}">
+                            <input type="text" class="form-control reply-input" placeholder="Write a reply..." required>
+                            <button class="btn btn-outline btn-sm" type="submit">Send</button>
+                        </form>
+                    </div>
+                </div>
+            </div>`;
+        if (comment.replies && comment.replies.length > 0) {
+            html += `<button class="toggle-replies-btn" data-comment-id="${comment.comment_id}"><i class="fa-solid fa-reply"></i> (${comment.replies.length})</button>`;
+            html += `<div class="replies-container" data-replies-for="${comment.comment_id}" style="display:none;">${renderComments(comment.replies, postId, true)}</div>`;
+        }
+        html += '</div>';
+    });
+    return html;
+}
+
 function loadComments(postId) {
     const commentsContainer = document.getElementById('comments-' + postId);
-    
     fetch('ajax/get_comments.php?post_id=' + postId)
     .then(response => response.json())
     .then(data => {
         if (data.status === 'success') {
-            let html = '';
-            
-            data.comments.forEach(comment => {
-                html += `
-                    <div class="comment">
-                        <div class="d-flex">
-                            <img src="assets/images/${comment.profile_pic}" class="rounded-circle me-2" width="32" alt="Profile">
-                            <div>
-                                <strong>${comment.full_name}</strong>
-                                <small style="color: gray;"> @${comment.username}</small>
-                                <p class="mb-0">${comment.content}</p>
-                                <small style="color: gray;">${comment.created_at}</small>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            });
-            
-            commentsContainer.innerHTML = html;
+            commentsContainer.innerHTML = renderComments(data.comments, postId);
         }
     })
     .catch(error => console.error('Error:', error));
 }
 
-function submitComment(postId, comment, inputElement) {
+// Handle reply button click (show/hide reply form)
+document.addEventListener('click', function(e) {
+    if (e.target.classList.contains('reply-button')) {
+        const commentDiv = e.target.closest('.comment');
+        const replyForm = commentDiv.querySelector('.reply-form');
+        replyForm.style.display = replyForm.style.display === 'none' ? 'block' : 'none';
+    }
+});
+
+// Handle reply form submission
+document.addEventListener('submit', function(e) {
+    if (e.target.classList.contains('reply-form-inner')) {
+        e.preventDefault();
+        const form = e.target;
+        const postId = form.getAttribute('data-post-id');
+        const parentId = form.getAttribute('data-parent-id');
+        const input = form.querySelector('.reply-input');
+        const content = input.value.trim();
+        if (content) {
+            submitComment(postId, content, input, parentId);
+        }
+    }
+});
+
+function submitComment(postId, comment, inputElement, parentId = null) {
+    let body = 'post_id=' + postId + '&content=' + encodeURIComponent(comment);
+    if (parentId) {
+        body += '&parent_id=' + parentId;
+    }
     fetch('ajax/add_comment.php', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
         },
-        body: 'post_id=' + postId + '&content=' + encodeURIComponent(comment)
+        body: body
     })
     .then(response => response.json())
     .then(data => {
         if (data.status === 'success') {
             // Clear input
             inputElement.value = '';
-            
+            // Hide reply form if it's a reply
+            if (parentId) {
+                inputElement.closest('.reply-form').style.display = 'none';
+            }
             // Update comment count
             const countElement = document.querySelector(`.comment-btn[data-post-id="${postId}"] .comment-count`);
-            countElement.textContent = parseInt(countElement.textContent) + 1;
-            
+            if (countElement) countElement.textContent = parseInt(countElement.textContent) + 1;
             // Load the comments
             loadComments(postId);
         }
@@ -357,3 +399,21 @@ function setupSendMessageAJAX(friendId) {
         form.reset();
     });
 }
+
+// Toggle replies show/hide
+// Use event delegation for dynamically loaded comments
+document.addEventListener('click', function(e) {
+    if (e.target.classList.contains('toggle-replies-btn')) {
+        const commentId = e.target.getAttribute('data-comment-id');
+        const repliesDiv = document.querySelector(`.replies-container[data-replies-for="${commentId}"]`);
+        if (repliesDiv) {
+            if (repliesDiv.style.display === 'none') {
+                repliesDiv.style.display = 'block';
+                e.target.textContent = 'Hide replies';
+            } else {
+                repliesDiv.style.display = 'none';
+                e.target.textContent = `View replies (${repliesDiv.children.length})`;
+            }
+        }
+    }
+});

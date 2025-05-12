@@ -18,10 +18,16 @@ if (!isset($_POST['post_id']) || !isset($_POST['content'])) {
 $user_id = $_SESSION['user_id'];
 $post_id = (int)$_POST['post_id'];
 $content = clean_input($_POST['content']);
+$parent_id = isset($_POST['parent_id']) ? (int)$_POST['parent_id'] : null;
 
-// Insert comment
-$stmt = $conn->prepare("INSERT INTO comments (post_id, user_id, content) VALUES (?, ?, ?)");
-$stmt->bind_param("iis", $post_id, $user_id, $content);
+// Insert comment (support replies)
+if ($parent_id) {
+    $stmt = $conn->prepare("INSERT INTO comments (post_id, user_id, content, parent_id) VALUES (?, ?, ?, ?)");
+    $stmt->bind_param("iisi", $post_id, $user_id, $content, $parent_id);
+} else {
+    $stmt = $conn->prepare("INSERT INTO comments (post_id, user_id, content) VALUES (?, ?, ?)");
+    $stmt->bind_param("iis", $post_id, $user_id, $content);
+}
 
 if ($stmt->execute()) {
     // Notify the post owner

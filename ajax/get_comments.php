@@ -17,23 +17,19 @@ if (!isset($_GET['post_id'])) {
 
 $post_id = (int)$_GET['post_id'];
 
-// Get comments for this post
-$stmt = $conn->prepare("
-    SELECT c.*, u.username, u.full_name, u.profile_pic 
-    FROM comments c
-    JOIN users u ON c.user_id = u.user_id
-    WHERE c.post_id = ?
-    ORDER BY c.created_at ASC
-");
-$stmt->bind_param("i", $post_id);
-$stmt->execute();
-$result = $stmt->get_result();
+// Get comments for this post (with replies)
+$comments = get_comments_with_replies($post_id);
 
-$comments = [];
-while ($row = $result->fetch_assoc()) {
-    $row['created_at'] = format_date($row['created_at']);
-    $comments[] = $row;
+// Format created_at for all comments and replies
+function format_comments_recursive(&$comments) {
+    foreach ($comments as &$comment) {
+        $comment['created_at'] = format_date($comment['created_at']);
+        if (isset($comment['replies']) && is_array($comment['replies'])) {
+            format_comments_recursive($comment['replies']);
+        }
+    }
 }
+format_comments_recursive($comments);
 
 echo json_encode(['status' => 'success', 'comments' => $comments]);
 ?>

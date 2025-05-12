@@ -745,6 +745,46 @@ while ($row = $result->fetch_assoc()) {
             text-align: center;
             color: rgba(255, 255, 255, 0.7);
         }
+
+        .toggle-replies-btn {
+            /* Keep your existing styles */
+            background: none;
+            border: none;
+            color: var(--color-6);
+            font-size: 0.9rem;
+            cursor: pointer;
+            margin: 5px 0 5px 35px;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            padding: 10px;
+            /* Add these new properties */
+            display: inline-flex;    /* Better than inline-block */
+            align-items: center;     /* Vertical centering */
+            max-width: 200px;        /* Adjust as needed */
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            padding: 4px 8px;        /* Add some padding */
+            line-height: 1.2;        /* Better than 0 for readability */
+        }
+
+        .toggle-replies-btn:hover {
+            background: var(--hover-bg);
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(241, 135, 234, 0.15);
+        }
+
+        .toggle-replies-btn:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(241, 135, 234, 0.25);
+        }
+        .reply-input{
+            margin-bottom: 10px;
+        }
+        .reply-form-inner .reply-input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
     </style>
 </head>
 <body>

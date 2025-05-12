@@ -158,23 +158,21 @@ function get_comments_with_replies($post_id) {
 // Get replies for a specific comment
 function get_comment_replies($comment_id) {
     global $conn;
-    
     $query = "SELECT c.*, u.username, u.profile_pic, u.full_name
               FROM comments c
               JOIN users u ON c.user_id = u.user_id
               WHERE c.parent_id = ?
               ORDER BY c.created_at ASC";
-              
     $stmt = $conn->prepare($query);
     $stmt->bind_param("i", $comment_id);
     $stmt->execute();
     $result = $stmt->get_result();
-    
     $replies = [];
     while ($row = $result->fetch_assoc()) {
+        // Recursive: fetch replies to this reply
+        $row['replies'] = get_comment_replies($row['comment_id']);
         $replies[] = $row;
     }
-    
     return $replies;
 }
 
