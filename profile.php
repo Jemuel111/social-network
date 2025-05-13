@@ -83,6 +83,63 @@ $stmt = $conn->prepare("
 $stmt->bind_param("ii", $profile_id, $profile_id);
 $stmt->execute();
 $friend_count = $stmt->get_result()->fetch_assoc()['total_friends'];
+
+// Handle post submission
+$post_message = '';
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['post_content'])) {
+    $content = clean_input($_POST['post_content']);
+    $image = '';
+    $user_id = $_SESSION['user_id'];
+
+    // Check if upload directory exists
+    if (!is_dir(UPLOAD_DIR)) {
+        mkdir(UPLOAD_DIR, 0755, true);
+    }
+
+    if (isset($_FILES['post_image']) && $_FILES['post_image']['error'] === UPLOAD_ERR_OK) {
+        $allowed = ['jpg', 'jpeg', 'png', 'gif'];
+        $filename = $_FILES['post_image']['name'];
+        $filetype = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+
+        if (in_array($filetype, $allowed)) {
+            $new_filename = uniqid('img_', true) . '.' . $filetype;
+            $upload_path = UPLOAD_DIR . $new_filename;
+
+            if (move_uploaded_file($_FILES['post_image']['tmp_name'], $upload_path)) {
+                $image = $new_filename;
+            } else {
+                $post_message = "Failed to move uploaded file.";
+            }
+        } else {
+            $post_message = "Invalid file type.";
+        }
+    }
+
+    // Insert post if no file errors
+    if (empty($post_message)) {
+        $visibility = isset($_POST['post_visibility']) ? $_POST['post_visibility'] : 'public';
+        $stmt = $conn->prepare("INSERT INTO posts (user_id, content, image, visibility) VALUES (?, ?, ?, ?)");
+        $stmt->bind_param("isss", $user_id, $content, $image, $visibility);
+
+        if ($stmt->execute()) {
+            $post_id = $conn->insert_id;
+            
+            // If specific friends were selected, add them to post_visibility_friends
+            if ($visibility === 'specific' && !empty($_POST['selected_friends'])) {
+                $friend_ids = explode(',', $_POST['selected_friends']);
+                $stmt = $conn->prepare("INSERT INTO post_visibility_friends (post_id, friend_id) VALUES (?, ?)");
+                foreach ($friend_ids as $friend_id) {
+                    $stmt->bind_param("ii", $post_id, $friend_id);
+                    $stmt->execute();
+                }
+            }
+            
+            $post_message = "Post created successfully!";
+        } else {
+            $post_message = "Error creating post: " . $conn->error;
+        }
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -158,14 +215,35 @@ $friend_count = $stmt->get_result()->fetch_assoc()['total_friends'];
 
         /* Responsive design */
         @media (max-width: 992px) {
+            body {
+                overflow-y: auto;
+                height: auto;
+            }
+
+            .page-container {
+                height: auto;
+                min-height: 100vh;
+            }
+
             .main-content {
                 grid-template-columns: 1fr;
                 gap: 1rem;
+                height: auto;
+                overflow: visible;
             }
 
             .left-column,
             .right-column {
+                height: auto;
+                overflow: visible;
                 padding: 0;
+            }
+
+            .profile-card,
+            .friends-section,
+            .create-post-section,
+            .posts-container {
+                margin-bottom: 1.5rem;
             }
         }
 
@@ -258,6 +336,30 @@ $friend_count = $stmt->get_result()->fetch_assoc()['total_friends'];
             height: 32px;
             border-radius: 50%;
             margin-right: 10px;
+        }
+        /* Visibility Selector Styles */
+        .visibility-select {
+            background: var(--input-bg);
+            border: 1px solid #4A3F85;
+            border-radius: 8px;
+            color: white;
+            padding: 0.5rem;
+            margin-left: 0.5rem;
+            margin-right: 50px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .visibility-select:hover {
+            background: var(--color-4);
+            border-color: var(--color-6);
+        }
+        
+        .visibility-select option {
+            background: var(--card-bg);
+            color: white;
         }
     </style>
 </head>
@@ -416,11 +518,14 @@ $friend_count = $stmt->get_result()->fetch_assoc()['total_friends'];
                     <!-- Create Post Section -->
                     <div class="create-post-section">
                         <h3 class="create-post-header">Create Post</h3>
-                        <form class="post-form" action="create_post.php" method="POST" enctype="multipart/form-data">
-                            <textarea class="post-input" name="content" placeholder="What's on your mind?" required></textarea>
+                        <?php if ($post_message): ?>
+                            <div class="alert alert-success"><?php echo $post_message; ?></div>
+                        <?php endif; ?>
+                        <form class="post-form" method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" enctype="multipart/form-data">
+                            <textarea class="post-input" name="post_content" placeholder="What's on your mind?" required></textarea>
                             <div class="post-actions" style="position:relative;">
                                 <label class="post-upload">
-                                    <input type="file" name="image" accept="image/*" style="display: none;">
+                                    <input type="file" name="post_image" accept="image/*" style="display: none;">
                                     <i class="fas fa-image"></i>
                                     <span>Photo</span>
                                 </label>

@@ -591,9 +591,10 @@ while ($row = $result->fetch_assoc()) {
         }
         
         .friend-avatar {
-            width: 50px;
-            height: 50px;
-            border-radius: 35%;
+            width: 50px !important;
+            height: 50px !important;
+            border-radius: 35% !important;
+            margin-right: 0!important;
         }
         
         .friend-info {
