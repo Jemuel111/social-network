@@ -591,7 +591,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['post_content'])) {
                                     <div class="post-content">
                                         <p><?php echo nl2br(htmlspecialchars($post['content'])); ?></p>
                                         <?php if ($post['image']): ?>
-                                            <img src="assets/uploads/<?php echo htmlspecialchars($post['image']); ?>" class="post-image" alt="Post image">
+                                            <img src="assets/images/<?php echo htmlspecialchars($post['image']); ?>" class="post-image" alt="Post image">
                                         <?php endif; ?>
                                     </div>
                                     

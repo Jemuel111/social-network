@@ -1157,7 +1157,7 @@ while ($row = $result->fetch_assoc()) {
                                                 </div>
                                                 <p><?php echo nl2br(htmlspecialchars($original['content'])); ?></p>
                                                 <?php if ($original['image']): ?>
-                                                    <img src="assets/uploads/<?php echo $original['image']; ?>" alt="Post image" class="post-image">
+                                                    <img src="assets/images/<?php echo $original['image']; ?>" alt="Post image" class="post-image">
                                                 <?php endif; ?>
                                             <?php else: ?>
                                                 <p class="text-muted">[Original post deleted]</p>
@@ -1198,7 +1198,7 @@ while ($row = $result->fetch_assoc()) {
                                         <div class="post-content">
                                             <p><?php echo nl2br(htmlspecialchars($post['content'])); ?></p>
                                             <?php if ($post['image']): ?>
-                                                <img src="assets/uploads/<?php echo $post['image']; ?>" alt="Post image" class="post-image">
+                                                <img src="assets/images/<?php echo $post['image']; ?>" alt="Post image" class="post-image">
                                             <?php endif; ?>
                                         </div>
                                     <?php endif; ?>
