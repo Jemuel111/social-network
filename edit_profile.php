@@ -48,55 +48,185 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Edit Profile - Social Network</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Profile - Zyntra</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/profile-style.css">
+    <style>
+        .edit-profile-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .edit-profile-card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        .profile-pic-preview {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--accent);
+            margin-bottom: 20px;
+        }
+        .custom-file-upload {
+            display: inline-block;
+            padding: 8px 20px;
+            background: var(--input-bg);
+            color: white;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid var(--accent);
+        }
+        .custom-file-upload:hover {
+            background: var(--hover-bg);
+            transform: translateY(-2px);
+        }
+        .form-control {
+            background: var(--input-bg);
+            border: 1px solid var(--accent);
+            color: white;
+            border-radius: 10px;
+            padding: 12px;
+        }
+        .form-control:focus {
+            background: var(--hover-bg);
+            border-color: var(--accent);
+            box-shadow: 0 0 0 0.25rem rgba(241, 135, 234, 0.25);
+            color: white;
+        }
+        .form-control::placeholder {
+            color: var(--light);
+        }
+        .form-label {
+            color: white;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+        .btn-save {
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            border: none;
+            color: white;
+            padding: 12px 30px;
+            border-radius: 10px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        .btn-save:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(241, 135, 234, 0.3);
+        }
+        .btn-cancel {
+            background: var(--input-bg);
+            border: 1px solid var(--accent);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 10px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        .btn-cancel:hover {
+            background: var(--hover-bg);
+            color: white;
+        }
+        .alert {
+            background: rgba(255, 59, 48, 0.1);
+            border: 1px solid var(--danger);
+            color: var(--danger);
+            border-radius: 10px;
+        }
+    </style>
 </head>
 <body>
     <?php include 'includes/navbar.php'; ?>
 
-    <div class="container mt-4">
-        <h3>Edit Profile</h3>
+    <!-- Background Elements -->
+    <div class="background-container">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+        <div class="grid-bg"></div>
+    </div>
 
-        <?php if (isset($error)): ?>
-            <div class="alert alert-danger"><?php echo $error; ?></div>
-        <?php endif; ?>
+    <div class="edit-profile-container">
+        <div class="edit-profile-card">
+            <h3 class="text-center mb-4" style="color: white;">Edit Profile</h3>
 
-        <form method="POST" enctype="multipart/form-data" class="card p-4 shadow-sm">
-            <div class="mb-3 text-center">
-                <img src="assets/images/<?php echo htmlspecialchars($user['profile_pic']); ?>" class="rounded-circle img-thumbnail mb-2" width="150" alt="Profile Picture">
-                <div>
-                    <input type="file" name="profile_pic" class="form-control mt-2">
-                    <small class="text-muted">Leave empty if you don't want to change picture.</small>
+            <?php if (isset($error)): ?>
+                <div class="alert alert-danger"><?php echo $error; ?></div>
+            <?php endif; ?>
+
+            <form method="POST" enctype="multipart/form-data">
+                <div class="text-center mb-4">
+                    <img src="assets/images/<?php echo htmlspecialchars($user['profile_pic'] ?: 'default.jpg'); ?>" 
+                         class="profile-pic-preview" 
+                         alt="Profile Picture"
+                         id="profile-preview">
+                    <div class="mt-3">
+                        <label for="profile_pic" class="custom-file-upload">
+                            <i class="fas fa-camera me-2"></i>Change Photo
+                        </label>
+                        <input type="file" name="profile_pic" id="profile_pic" class="d-none" accept="image/*">
+                        <small class="d-block text-muted mt-2">Leave empty if you don't want to change picture.</small>
+                    </div>
                 </div>
-            </div>
 
-            <div class="mb-3">
-                <label class="form-label">Full Name</label>
-                <input type="text" name="full_name" class="form-control" value="<?php echo htmlspecialchars($user['full_name']); ?>" required>
-            </div>
+                <div class="mb-4">
+                    <label class="form-label">Full Name</label>
+                    <input type="text" name="full_name" class="form-control" 
+                           value="<?php echo htmlspecialchars($user['full_name']); ?>" required>
+                </div>
 
-            <div class="mb-3">
-                <label class="form-label">Bio</label>
-                <textarea name="bio" class="form-control" rows="3"><?php echo htmlspecialchars($user['bio']); ?></textarea>
-            </div>
+                <div class="mb-4">
+                    <label class="form-label">Bio</label>
+                    <textarea name="bio" class="form-control" rows="3" 
+                              placeholder="Tell us about yourself..."><?php echo htmlspecialchars($user['bio']); ?></textarea>
+                </div>
 
-            <div class="mb-3">
-                <label class="form-label">Email</label>
-                <input type="email" name="email" class="form-control" value="<?php echo htmlspecialchars($user['email']); ?>">
-            </div>
+                <div class="mb-4">
+                    <label class="form-label">Email</label>
+                    <input type="email" name="email" class="form-control" 
+                           value="<?php echo htmlspecialchars($user['email']); ?>">
+                </div>
 
-            <div class="mb-3">
-                <label class="form-label">Location</label>
-                <input type="text" name="location" class="form-control" value="<?php echo htmlspecialchars($user['location']); ?>">
-            </div>
+                <div class="mb-4">
+                    <label class="form-label">Location</label>
+                    <input type="text" name="location" class="form-control" 
+                           value="<?php echo htmlspecialchars($user['location']); ?>"
+                           placeholder="Where are you from?">
+                </div>
 
-            <button type="submit" class="btn btn-primary">Save Changes</button>
-            <a href="profile.php" class="btn btn-secondary">Cancel</a>
-        </form>
+                <div class="d-flex gap-3 justify-content-center">
+                    <button type="submit" class="btn btn-save">
+                        <i class="fas fa-save me-2"></i>Save Changes
+                    </button>
+                    <a href="profile.php" class="btn btn-cancel">
+                        <i class="fas fa-times me-2"></i>Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Preview profile picture before upload
+        document.getElementById('profile_pic').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('profile-preview').src = e.target.result;
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+    </script>
 </body>
 </html>

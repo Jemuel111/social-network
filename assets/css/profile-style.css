@@ -349,7 +349,6 @@
     margin-bottom: 1.5rem;
     color: var(--white);
 }
-
 .card.post {
     background: var(--card-bg);
     border: none;
@@ -359,6 +358,7 @@
 }
 
 .card-body {
+    
     padding: 1.5rem;
 }
 

@@ -31,7 +31,7 @@
                 <span class="badge bg-danger rounded-pill" id="navbarNotificationBadge"><?php echo $unread_count; ?></span>
                 <?php endif; ?>
             </a>
-            <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'search.php' ? 'active' : ''; ?>" href="search.php">
+            <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'search_page.php' ? 'active' : ''; ?>" href="search_page.php">
                 <i class="fas fa-search"></i>
             </a>
         </div>

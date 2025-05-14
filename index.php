@@ -1099,9 +1099,9 @@ while ($row = $result->fetch_assoc()) {
                     <!-- Posts Feed -->
                     <?php if (empty($posts)): ?>
                         <div class="card">
-                            <div class="card-body text-center py-5">
+                            <div class="card-body text-center py-5" style="background-color: var(--card-bg);">
                                 <i class="bi bi-newspaper fa-3x mb-3 text-white"></i>
-                                <h5>No Posts Yet</h5>
+                                <h5 class="text-white">No Posts Yet</h5>
                                 <p class="text-white">Create your first post or add friends to see their posts here!</p>
                             </div>
                         </div>
@@ -1119,11 +1119,18 @@ while ($row = $result->fetch_assoc()) {
                                         $original = $orig_result->fetch_assoc();
                                         ?>
                                         <div class="post-header d-flex align-items-center">
-                                            <img src="assets/images/<?php echo $post['profile_pic']; ?>" alt="Sharer" class="post-avatar">
+                                            <a href="profile.php?username=<?php echo htmlspecialchars($original['username']); ?>" class="text-decoration-none">
+                                                <img src="assets/images/<?php echo $original['profile_pic']; ?>" alt="Sharer" class="post-avatar">
+                                            </a>
                                             <div class="post-user flex-grow-1">
-                                                <h6 class="post-username"><?php echo $post['full_name']; ?> <span style='font-weight:400;color:#F187EA;'>shared</span> <?php echo $original ? $original['full_name'] : '[Deleted]'; ?>'s post</h6>
+                                                <h6 class="post-username">
+                                                    <a href="profile.php?username=<?php echo htmlspecialchars($original['username']); ?>" class="text-decoration-none text-white">
+                                                        <?php echo $original['full_name']; ?>
+                                                    </a> <span style='font-weight:400;color:#F187EA;'>shared</span> <?php echo $original ? $original['full_name'] : '[Deleted]'; ?>'s post</h6>
                                                 <p class="post-time">
-                                                    @<?php echo $post['username']; ?> · 
+                                                    <a href="profile.php?username=<?php echo htmlspecialchars($original['username']); ?>" class="text-decoration-none text-muted">
+                                                        @<?php echo $original['username']; ?>
+                                                    </a> · 
                                                     <?php echo format_date($post['created_at']); ?>
                                                     <span class="privacy-indicator" title="<?php echo ucfirst($post['visibility']); ?>">
                                                         <?php if ($post['visibility'] === 'public'): ?>
@@ -1165,11 +1172,19 @@ while ($row = $result->fetch_assoc()) {
                                         </div>
                                     <?php else: // Normal post ?>
                                         <div class="post-header d-flex align-items-center">
-                                            <img src="assets/images/<?php echo $post['profile_pic']; ?>" alt="User" class="post-avatar">
+                                            <a href="profile.php?username=<?php echo htmlspecialchars($post['username']); ?>" class="text-decoration-none">
+                                                <img src="assets/images/<?php echo $post['profile_pic']; ?>" alt="User" class="post-avatar">
+                                            </a>
                                             <div class="post-user flex-grow-1">
-                                                <h6 class="post-username"><?php echo $post['full_name']; ?></h6>
+                                                <h6 class="post-username">
+                                                    <a href="profile.php?username=<?php echo htmlspecialchars($post['username']); ?>" class="text-decoration-none text-white">
+                                                        <?php echo $post['full_name']; ?>
+                                                    </a>
+                                                </h6>
                                                 <p class="post-time">
-                                                    @<?php echo $post['username']; ?> · 
+                                                    <a href="profile.php?username=<?php echo htmlspecialchars($post['username']); ?>" class="text-decoration-none text-muted">
+                                                        @<?php echo $post['username']; ?>
+                                                    </a> · 
                                                     <?php echo format_date($post['created_at']); ?>
                                                     <span class="privacy-indicator" title="<?php echo ucfirst($post['visibility']); ?>">
                                                         <?php if ($post['visibility'] === 'public'): ?>

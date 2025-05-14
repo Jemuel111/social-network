@@ -153,6 +153,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['post_content'])) {
     <link rel="stylesheet" href="assets/css/profile-style.css">
     <link rel="stylesheet" href="assets/css/style.css">
     <style>
+        
         /* Layout styles */
         body {
             height: 100vh;
@@ -548,10 +549,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['post_content'])) {
                 <!-- Posts Section -->
                 <div class="posts-container">
                     <?php if (empty($posts)): ?>
-                        <div class="card">
+                        <div class="card no-posts" style="background-color: var(--color-4);">
                             <div class="card-body text-center py-5">
                                 <i class="bi bi-newspaper fa-3x mb-3 text-white"></i>
-                                <h5>No Posts Yet</h5>
+                                <h5 class="text-white">No Posts Yet</h5>
                                 <p class="text-white">
                                     <?php echo $is_own_profile ? "You haven't" : htmlspecialchars($user['full_name']) . " hasn't"; ?> posted anything yet.
                                 </p>
@@ -562,10 +563,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['post_content'])) {
                             <div class="card post">
                                 <div class="card-body">
                                     <div class="post-header d-flex align-items-center">
-                                        <img src="assets/images/<?php echo htmlspecialchars($user['profile_pic']); ?>" class="post-avatar" alt="Profile Picture">
+                                        <a href="profile.php?username=<?php echo htmlspecialchars($user['username']); ?>" class="text-decoration-none">
+                                            <img src="assets/images/<?php echo htmlspecialchars($user['profile_pic']); ?>" class="post-avatar" alt="Profile Picture">
+                                        </a>
                                         <div class="post-user flex-grow-1">
-                                            <h6 class="post-username"><?php echo htmlspecialchars($user['full_name']); ?></h6>
-                                            <p class="post-time">@<?php echo htmlspecialchars($user['username']); ?> · <?php echo format_date($post['created_at']); ?>
+                                            <h6 class="post-username">
+                                                <a href="profile.php?username=<?php echo htmlspecialchars($user['username']); ?>" class="text-decoration-none text-white">
+                                                    <?php echo htmlspecialchars($user['full_name']); ?>
+                                                </a>
+                                            </h6>
+                                            <p class="post-time">
+                                                <a href="profile.php?username=<?php echo htmlspecialchars($user['username']); ?>" class="text-decoration-none text-muted">
+                                                    @<?php echo htmlspecialchars($user['username']); ?>
+                                                </a> · <?php echo format_date($post['created_at']); ?>
                                                 <span class="privacy-indicator" title="<?php echo ucfirst($post['visibility']); ?>">
                                                     <?php if ($post['visibility'] === 'public'): ?>
                                                         <i class="fas fa-globe"></i>
