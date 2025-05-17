@@ -110,7 +110,9 @@
     font-size: 1.1rem;
     margin-bottom: 1rem;
 }
-
+.user-name{
+    color: var(--color-6) !important;
+}
 .profile-bio {
     color: white;
     margin-bottom: 1.5rem;

@@ -23,7 +23,7 @@ if (isset($_GET['query'])) {
         $users[] = $row;
     }
 
-    echo json_encode($users);
+    echo json_encode(['users' => $users]);
     exit;
 }
 ?>

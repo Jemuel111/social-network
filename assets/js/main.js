@@ -141,7 +141,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const modalHtml = `
         <div class="modal fade" id="editPostModal" tabindex="-1" aria-hidden="true">
           <div class="modal-dialog">
-            <div class="modal-content">
+            <div class="modal-content" style="background-color: #2A2056;">
               <div class="modal-header">
                 <h5 class="modal-title">Edit Post</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>

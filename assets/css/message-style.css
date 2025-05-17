@@ -580,3 +580,11 @@ body {
         height: 36px;
     }
 }
+
+.unread-preview {
+    background: #fff !important;
+    color: var(--color-4) !important;
+    font-weight: bold;
+    border-radius: 6px;
+    padding: 2px 8px;
+}

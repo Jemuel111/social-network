@@ -38,6 +38,82 @@ if (isset($_GET['q'])) {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="assets/css/style.css">
     <style>
+        :root {
+            --color-1: #3C2D57;  /* Dark purple */
+            --color-2: #694786;  /* Medium purple */
+            --color-3: #A486B0;  /* Light purple/lavender */
+            --color-4: #1A1347;  /* Deep purple/indigo */
+            --color-5: #5D479A;  /* Bright purple */
+            --color-6: #F187EA;  /* Pink/magenta */
+            --card-bg: #2A2056;
+            --white: #FFFFFF;
+            --success: #42B72A;
+            --danger: #FF3B30;
+        }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--color-4);
+            color: white;
+            position: relative;
+        }
+        .custom-container{
+            margin: 0 0 0 0;
+        }
+        /* Background Elements */
+        .background-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            z-index: -2;
+        }
+        
+        .blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(60px);
+            z-index: -1;
+            opacity: 0.3;
+        }
+        
+        .blob-1 {
+            width: 600px;
+            height: 600px;
+            background: #8A2BE2;
+            top: -200px;
+            left: -100px;
+        }
+        
+        .blob-2 {
+            width: 500px;
+            height: 500px;
+            background: #9370DB;
+            bottom: -150px;
+            right: -100px;
+        }
+        
+        .blob-3 {
+            width: 400px;
+            height: 400px;
+            background: #DA70D6;
+            top: 40%;
+            left: 60%;
+        }
+        
+        .grid-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+                              linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+            background-size: 20px 20px;
+            z-index: 0;
+            opacity: 0.2;
+        }
         .search-page-container {
             max-width: 100%;
             margin: 0 auto;
@@ -67,9 +143,11 @@ if (isset($_GET['q'])) {
         }
         .search-input:focus {
             outline: none;
-            background: var(--hover-bg);
-            border-color: var(--accent);
-            box-shadow: 0 0 0 0.25rem rgba(241, 135, 234, 0.25);
+            background: var(--color-4);
+            border-color: var(--color-6);
+        }
+        .search-input::placeholder{
+            color: white;
         }
         .search-icon {
             position: absolute;
@@ -117,7 +195,7 @@ if (isset($_GET['q'])) {
             font-size: 0.85rem;
             margin-top: 5px;
             display: -webkit-box;
-            -webkit-line-clamp: 2;
+            
             -webkit-box-orient: vertical;
             overflow: hidden;
         }
@@ -138,6 +216,13 @@ if (isset($_GET['q'])) {
     </style>
 </head>
 <body>
+    <!-- Background Elements -->
+    <div class="background-container">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+        <div class="grid-bg"></div>
+    </div>
     <?php include 'includes/navbar.php'; ?>
 
     <!-- Background Elements -->
@@ -154,42 +239,80 @@ if (isset($_GET['q'])) {
                 <a href="index.php" class="back-btn">
                     <i class="fas fa-arrow-left"></i>
                 </a>
-                <i class="fas fa-search search-icon"></i>
                 <input type="text" 
-                       name="q" 
+                       id="mobileSearchInput"
+                       name="q"
                        class="search-input" 
                        placeholder="Search users..." 
-                       value="<?php echo htmlspecialchars($search_term); ?>"
-                       autocomplete="off">
+                       autocomplete="off"
+                       value="<?php echo htmlspecialchars($search_term); ?>">
             </form>
         </div>
-
-        <?php if (!empty($search_term)): ?>
-            <?php if (empty($search_results)): ?>
-                <div class="no-results">
-                    <i class="fas fa-search fa-2x mb-3"></i>
-                    <h4>No users found</h4>
-                    <p>Try searching with a different term</p>
-                </div>
-            <?php else: ?>
-                <?php foreach ($search_results as $user): ?>
-                    <a href="profile.php?username=<?php echo htmlspecialchars($user['username']); ?>" class="user-card">
-                        <img src="assets/images/<?php echo htmlspecialchars($user['profile_pic'] ?: 'default.jpg'); ?>" 
-                             alt="Profile" 
-                             class="user-avatar">
-                        <div class="user-info">
-                            <div class="user-name"><?php echo htmlspecialchars($user['full_name']); ?></div>
-                            <div class="user-username">@<?php echo htmlspecialchars($user['username']); ?></div>
-                            <?php if (!empty($user['bio'])): ?>
-                                <div class="user-bio"><?php echo htmlspecialchars($user['bio']); ?></div>
-                            <?php endif; ?>
-                        </div>
-                    </a>
-                <?php endforeach; ?>
+        <div id="mobileSearchResults">
+            <?php if (!empty($search_term)): ?>
+                <?php if (empty($search_results)): ?>
+                    <div class="no-results"><i class="fas fa-search fa-2x mb-3"></i><h4>No users found</h4><p>Try searching with a different term</p></div>
+                <?php else: ?>
+                    <?php foreach ($search_results as $user): ?>
+                        <a href="profile.php?username=<?php echo htmlspecialchars($user['username']); ?>" class="user-card">
+                            <img src="assets/images/<?php echo htmlspecialchars($user['profile_pic'] ?: 'default.jpg'); ?>" alt="Profile" class="user-avatar">
+                            <div class="user-info">
+                                <div class="user-name"><?php echo htmlspecialchars($user['full_name']); ?></div>
+                                <div class="user-username">@<?php echo htmlspecialchars($user['username']); ?></div>
+                                <?php if (!empty($user['bio'])): ?>
+                                    <div class="user-bio"><?php echo htmlspecialchars($user['bio']); ?></div>
+                                <?php endif; ?>
+                            </div>
+                        </a>
+                    <?php endforeach; ?>
+                <?php endif; ?>
             <?php endif; ?>
-        <?php endif; ?>
+        </div>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchInput = document.getElementById('mobileSearchInput');
+        const searchResults = document.getElementById('mobileSearchResults');
+        let searchTimeout;
+
+        // Only use AJAX if not loaded from a GET search
+        if (!searchInput.value) {
+            searchInput.addEventListener('input', function() {
+                clearTimeout(searchTimeout);
+                const query = this.value.trim();
+
+                if (query.length < 2) {
+                    searchResults.innerHTML = '';
+                    return;
+                }
+
+                searchTimeout = setTimeout(() => {
+                    fetch(`ajax/search_users.php?q=${encodeURIComponent(query)}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.users && data.users.length > 0) {
+                                searchResults.innerHTML = data.users.map(user => `
+                                    <a href="profile.php?username=${encodeURIComponent(user.username)}" class="user-card">
+                                        <img src="assets/images/${user.profile_pic || 'default.jpg'}" alt="Profile" class="user-avatar">
+                                        <div class="user-info">
+                                            <div class="user-name">${user.full_name}</div>
+                                            <div class="user-username">@${user.username}</div>
+                                        </div>
+                                    </a>
+                                `).join('');
+                            } else {
+                                searchResults.innerHTML = '<div class="no-results"><i class="fas fa-search fa-2x mb-3"></i><h4>No users found</h4><p>Try searching with a different term</p></div>';
+                            }
+                        })
+                        .catch(error => {
+                            searchResults.innerHTML = '<div class="no-results">Error searching users</div>';
+                        });
+                }, 300);
+            });
+        }
+    });
+    </script>
 </body>
 </html> 

@@ -42,6 +42,19 @@ function get_user_by_id($user_id) {
     return false;
 }
 
+// Get user info by username
+function get_user_by_username($username) {
+    global $conn;
+    $stmt = $conn->prepare("SELECT * FROM users WHERE username = ?");
+    $stmt->bind_param("s", $username);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    if ($result->num_rows > 0) {
+        return $result->fetch_assoc();
+    }
+    return false;
+}
+
 // Get posts for user feed
 function get_feed_posts($user_id, $limit = 10, $offset = 0) {
     global $conn;

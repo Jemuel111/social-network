@@ -34,6 +34,15 @@
             <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'search_page.php' ? 'active' : ''; ?>" href="search_page.php">
                 <i class="fas fa-search"></i>
             </a>
+            <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'profile.php' ? 'active' : ''; ?>" href="profile.php">
+                <i class="fas fa-user"></i>
+            </a>
+            <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'settings.php' ? 'active' : ''; ?>" href="settings.php">
+                <i class="fas fa-cog"></i>
+            </a>
+            <a class="nav-link" href="logout.php">
+                <i class="fas fa-sign-out-alt"></i>
+            </a>
         </div>
 
         <!-- Desktop navbar -->
@@ -49,14 +58,14 @@
                         <i class="fas fa-users"></i>
                     </a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'messages.php' ? 'active' : ''; ?>" href="messages.php">
-                        <i class="fas fa-envelope"></i>
-                        <?php
-                        if ($unread_messages > 0):
-                        ?>
-                        <span class="badge bg-danger rounded-pill" id="navbarMessageBadge"><?php echo $unread_messages; ?></span>
-                        <?php endif; ?>
+                <li class="nav-item" style="position: relative;">
+                    <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'messages.php' ? 'active' : ''; ?>" href="messages.php" style="position: relative; display: inline-block;">
+                        <span style="position: relative; display: inline-block;">
+                            <i class="fas fa-envelope"></i>
+                            <?php if ($unread_messages > 0): ?>
+                                <span class="badge bg-danger rounded-pill" id="navbarMessageBadge" style="position: absolute; top: -8px; right: -8px; font-size: 0.7rem;"> <?php echo $unread_messages; ?> </span>
+                            <?php endif; ?>
+                        </span>
                     </a>
                 </li>
                 <li class="nav-item dropdown">
@@ -104,7 +113,7 @@
                 </li>
             </ul>
 
-            <form action="search.php" method="GET" class="search-container">
+            <form action="search_page.php" method="GET" class="search-container">
                 <div class="search">
                     <input class="form-control" type="search" name="q" id="searchInput" placeholder="Search users..." aria-label="Search" autocomplete="off">
                     <div id="searchResults" class="search-results-dropdown"></div>
@@ -326,7 +335,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 .then(data => {
                     if (data.users && data.users.length > 0) {
                         searchResults.innerHTML = data.users.map(user => `
-                            <a href="profile.php?id=${user.user_id}" class="search-result-item">
+                            <a href="profile.php?username=${encodeURIComponent(user.username)}" class="search-result-item">
                                 <img src="assets/images/${user.profile_pic}" alt="${user.full_name}">
                                 <div class="search-result-info">
                                     <div class="search-result-name">${user.full_name}</div>
@@ -359,5 +368,22 @@ document.addEventListener('DOMContentLoaded', function() {
             searchResults.style.display = 'none';
         }
     });
+
+    // Hide Zyntra logo on mobile when scrolling
+    const logo = document.querySelector('.navbar-brand');
+    function handleLogoVisibility() {
+        if (window.innerWidth <= 992) {
+            if (window.scrollY > 10) {
+                logo.style.display = 'none';
+            } else {
+                logo.style.display = '';
+            }
+        } else {
+            logo.style.display = '';
+        }
+    }
+    window.addEventListener('scroll', handleLogoVisibility);
+    window.addEventListener('resize', handleLogoVisibility);
+    handleLogoVisibility();
 });
 </script>

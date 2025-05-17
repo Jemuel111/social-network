@@ -1128,7 +1128,7 @@ while ($row = $result->fetch_assoc()) {
                                                         <?php echo $original['full_name']; ?>
                                                     </a> <span style='font-weight:400;color:#F187EA;'>shared</span> <?php echo $original ? $original['full_name'] : '[Deleted]'; ?>'s post</h6>
                                                 <p class="post-time">
-                                                    <a href="profile.php?username=<?php echo htmlspecialchars($original['username']); ?>" class="text-decoration-none text-muted">
+                                                    <a href="profile.php?username=<?php echo htmlspecialchars($original['username']); ?>" class="text-decoration-none text-secondary">
                                                         @<?php echo $original['username']; ?>
                                                     </a> · 
                                                     <?php echo format_date($post['created_at']); ?>
@@ -1162,7 +1162,7 @@ while ($row = $result->fetch_assoc()) {
                                                     <img src="assets/images/<?php echo $original['profile_pic']; ?>" alt="Original User" class="post-avatar" style="width:32px;height:32px;margin-right:8px;">
                                                     <strong><?php echo $original['full_name']; ?></strong> <span style="color:#F187EA;">@<?php echo $original['username']; ?></span>
                                                 </div>
-                                                <p><?php echo nl2br(htmlspecialchars($original['content'])); ?></p>
+                                                <p><?php echo nl2br(html_entity_decode(htmlspecialchars($original['content']))); ?></p>
                                                 <?php if ($original['image']): ?>
                                                     <img src="assets/images/<?php echo $original['image']; ?>" alt="Post image" class="post-image">
                                                 <?php endif; ?>
@@ -1182,7 +1182,7 @@ while ($row = $result->fetch_assoc()) {
                                                     </a>
                                                 </h6>
                                                 <p class="post-time">
-                                                    <a href="profile.php?username=<?php echo htmlspecialchars($post['username']); ?>" class="text-decoration-none text-muted">
+                                                    <a href="profile.php?username=<?php echo htmlspecialchars($post['username']); ?>" class="text-decoration-none text-white">
                                                         @<?php echo $post['username']; ?>
                                                     </a> · 
                                                     <?php echo format_date($post['created_at']); ?>
@@ -1198,7 +1198,7 @@ while ($row = $result->fetch_assoc()) {
                                                 </p>
                                             </div>
                                             <div class="post-menu ms-auto">
-                                                <button class="menu-trigger" type="button" tabindex="0"><i class="fas fa-ellipsis-h"></i></button>
+                                                <button class="menu-trigger" type="button" tabindex="0"><i class="fas fa-ellipsis-h" style="color: var(--accent);"></i></button>
                                                 <div class="dropdown-menu">
                                                     <?php if ($post['user_id'] == $_SESSION['user_id']): ?>
                                                         <button class="dropdown-item edit-post-btn" data-post-id="<?php echo $post['post_id']; ?>">Edit Post</button>
@@ -1211,7 +1211,7 @@ while ($row = $result->fetch_assoc()) {
                                             </div>
                                         </div>
                                         <div class="post-content">
-                                            <p><?php echo nl2br(htmlspecialchars($post['content'])); ?></p>
+                                            <p><?php echo nl2br(html_entity_decode(htmlspecialchars($post['content']))); ?></p>
                                             <?php if ($post['image']): ?>
                                                 <img src="assets/images/<?php echo $post['image']; ?>" alt="Post image" class="post-image">
                                             <?php endif; ?>
@@ -1511,10 +1511,10 @@ while ($row = $result->fetch_assoc()) {
         const editPrivacyModal = `
             <div class="modal fade" id="editPrivacyModal" tabindex="-1">
                 <div class="modal-dialog">
-                    <div class="modal-content">
+                    <div class="modal-content" style="background-color: var(--color-4);">
                         <div class="modal-header">
                             <h5 class="modal-title">Edit Post Privacy</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                         </div>
                         <div class="modal-body">
                             <select class="form-select mb-3" id="edit-visibility-select">
@@ -1529,7 +1529,7 @@ while ($row = $result->fetch_assoc()) {
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel</button>
                             <button type="button" class="btn btn-primary" id="save-privacy-btn">Save Changes</button>
                         </div>
                     </div>

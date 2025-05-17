@@ -55,6 +55,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link rel="stylesheet" href="assets/css/style.css">
     <link rel="stylesheet" href="assets/css/profile-style.css">
     <style>
+        :root {
+            --color-1: #3C2D57;  /* Dark purple */
+            --color-2: #694786;  /* Medium purple */
+            --color-3: #A486B0;  /* Light purple/lavender */
+            --color-4: #1A1347;  /* Deep purple/indigo */
+            --color-5: #5D479A;  /* Bright purple */
+            --color-6: #F187EA;  /* Pink/magenta */
+            --card-bg: #2A2056;
+            --white: #FFFFFF;
+            --success: #42B72A;
+            --danger: #FF3B30;
+        }
         .edit-profile-container {
             max-width: 800px;
             margin: 0 auto;
@@ -77,28 +89,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         .custom-file-upload {
             display: inline-block;
             padding: 8px 20px;
-            background: var(--input-bg);
+            background: var(--color-5);
             color: white;
             border-radius: 20px;
             cursor: pointer;
             transition: all 0.3s ease;
-            border: 1px solid var(--accent);
+            
         }
         .custom-file-upload:hover {
             background: var(--hover-bg);
-            transform: translateY(-2px);
+            color: var(--color-6);
         }
         .form-control {
             background: var(--input-bg);
-            border: 1px solid var(--accent);
+            border: 2px solid var(--color-5);
             color: white;
             border-radius: 10px;
             padding: 12px;
         }
         .form-control:focus {
-            background: var(--hover-bg);
-            border-color: var(--accent);
-            box-shadow: 0 0 0 0.25rem rgba(241, 135, 234, 0.25);
+            background: var(--color-2);
+            border-color: var(--color-6);
             color: white;
         }
         .form-control::placeholder {
@@ -110,7 +121,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             margin-bottom: 8px;
         }
         .btn-save {
-            background: linear-gradient(90deg, var(--primary), var(--accent));
+            background: var(--color-5);
             border: none;
             color: white;
             padding: 12px 30px;
@@ -121,9 +132,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         .btn-save:hover {
             transform: translateY(-2px);
             box-shadow: 0 4px 15px rgba(241, 135, 234, 0.3);
+            color: var(--color-6);
         }
         .btn-cancel {
-            background: var(--input-bg);
+            background: var(--danger);
             border: 1px solid var(--accent);
             color: white;
             padding: 12px 30px;
@@ -132,7 +144,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             transition: all 0.3s ease;
         }
         .btn-cancel:hover {
-            background: var(--hover-bg);
+            background: var(--danger);
+            transform: translateY(-2px);
             color: white;
         }
         .alert {
@@ -173,7 +186,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <i class="fas fa-camera me-2"></i>Change Photo
                         </label>
                         <input type="file" name="profile_pic" id="profile_pic" class="d-none" accept="image/*">
-                        <small class="d-block text-muted mt-2">Leave empty if you don't want to change picture.</small>
+                        <small class="d-block text-white mt-2">Leave empty if you don't want to change picture.</small>
                     </div>
                 </div>
 

@@ -131,9 +131,11 @@ if (isset($_GET['friend_id'])) {
                     </span>
                     <span class="friend-info">
                         <span class="friend-name"><?php echo htmlspecialchars($friend['full_name']); ?></span>
-                        <span class="last-message-preview">
-                            <?php
+                        <span class="last-message-preview<?php
                             $last = $last_messages[$friend['user_id']];
+                            if ($last && $last['receiver_id'] == $user_id && !$last['is_read']) echo ' unread-preview';
+                        ?>">
+                            <?php
                             if ($last) {
                                 $is_me = $last['sender_id'] == $user_id;
                                 $prefix = $is_me ? 'You: ' : '';
@@ -165,6 +167,12 @@ if (isset($_GET['friend_id'])) {
     if(chatBox){
         chatBox.scrollTop = chatBox.scrollHeight;
     }
+    // Update navbar message badge after marking as read
+    <?php if (isset($_GET['friend_id'])): ?>
+    if (typeof updateNavbarMessageBadge === 'function') {
+        updateNavbarMessageBadge();
+    }
+    <?php endif; ?>
 </script>
 </body>
 </html>

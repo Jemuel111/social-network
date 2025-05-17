@@ -6,15 +6,22 @@ require_once 'includes/functions.php';
 require_login();
 
 // Check profile
-$profile_id = isset($_GET['id']) ? (int)$_GET['id'] : (int)$_SESSION['user_id'];
-$is_own_profile = ($profile_id === (int)$_SESSION['user_id']);
-
-// Get user
-$user = get_user_by_id($profile_id);
-
-if (!$user) {
-    header("Location: index.php");
-    exit;
+if (isset($_GET['username'])) {
+    $user = get_user_by_username($_GET['username']);
+    if (!$user) {
+        header("Location: index.php");
+        exit;
+    }
+    $profile_id = (int)$user['user_id'];
+    $is_own_profile = ($profile_id === (int)$_SESSION['user_id']);
+} else {
+    $profile_id = isset($_GET['id']) ? (int)$_GET['id'] : (int)$_SESSION['user_id'];
+    $is_own_profile = ($profile_id === (int)$_SESSION['user_id']);
+    $user = get_user_by_id($profile_id);
+    if (!$user) {
+        header("Location: index.php");
+        exit;
+    }
 }
 
 // Blocked logic
@@ -84,6 +91,21 @@ $stmt->bind_param("ii", $profile_id, $profile_id);
 $stmt->execute();
 $friend_count = $stmt->get_result()->fetch_assoc()['total_friends'];
 
+// Calculate mutual friends if viewing another user's profile
+$mutual_count = 0;
+if (!$is_own_profile) {
+    $stmt = $conn->prepare("
+        SELECT COUNT(*) as mutual_count
+        FROM friendships f1
+        WHERE f1.status = 'accepted'
+          AND ((f1.user_id = ? AND f1.friend_id IN (SELECT friend_id FROM friendships WHERE user_id = ? AND status = 'accepted'))
+            OR (f1.friend_id = ? AND f1.user_id IN (SELECT user_id FROM friendships WHERE friend_id = ? AND status = 'accepted')))
+    ");
+    $stmt->bind_param("iiii", $_SESSION['user_id'], $profile_id, $_SESSION['user_id'], $profile_id);
+    $stmt->execute();
+    $mutual_count = $stmt->get_result()->fetch_assoc()['mutual_count'];
+}
+
 // Handle post submission
 $post_message = '';
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['post_content'])) {
@@ -108,37 +130,52 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['post_content'])) {
             if (move_uploaded_file($_FILES['post_image']['tmp_name'], $upload_path)) {
                 $image = $new_filename;
             } else {
-                $post_message = "Failed to move uploaded file.";
+                $_SESSION['post_error'] = "Failed to move uploaded file.";
+                header("Location: " . $_SERVER['PHP_SELF']);
+                exit;
             }
         } else {
-            $post_message = "Invalid file type.";
+            $_SESSION['post_error'] = "Invalid file type.";
+            header("Location: " . $_SERVER['PHP_SELF']);
+            exit;
         }
     }
 
     // Insert post if no file errors
-    if (empty($post_message)) {
-        $visibility = isset($_POST['post_visibility']) ? $_POST['post_visibility'] : 'public';
-        $stmt = $conn->prepare("INSERT INTO posts (user_id, content, image, visibility) VALUES (?, ?, ?, ?)");
-        $stmt->bind_param("isss", $user_id, $content, $image, $visibility);
+    $visibility = isset($_POST['post_visibility']) ? $_POST['post_visibility'] : 'public';
+    $stmt = $conn->prepare("INSERT INTO posts (user_id, content, image, visibility) VALUES (?, ?, ?, ?)");
+    $stmt->bind_param("isss", $user_id, $content, $image, $visibility);
 
-        if ($stmt->execute()) {
-            $post_id = $conn->insert_id;
-            
-            // If specific friends were selected, add them to post_visibility_friends
-            if ($visibility === 'specific' && !empty($_POST['selected_friends'])) {
-                $friend_ids = explode(',', $_POST['selected_friends']);
-                $stmt = $conn->prepare("INSERT INTO post_visibility_friends (post_id, friend_id) VALUES (?, ?)");
-                foreach ($friend_ids as $friend_id) {
-                    $stmt->bind_param("ii", $post_id, $friend_id);
-                    $stmt->execute();
-                }
+    if ($stmt->execute()) {
+        $post_id = $conn->insert_id;
+        
+        // If specific friends were selected, add them to post_visibility_friends
+        if ($visibility === 'specific' && !empty($_POST['selected_friends'])) {
+            $friend_ids = explode(',', $_POST['selected_friends']);
+            $stmt = $conn->prepare("INSERT INTO post_visibility_friends (post_id, friend_id) VALUES (?, ?)");
+            foreach ($friend_ids as $friend_id) {
+                $stmt->bind_param("ii", $post_id, $friend_id);
+                $stmt->execute();
             }
-            
-            $post_message = "Post created successfully!";
-        } else {
-            $post_message = "Error creating post: " . $conn->error;
         }
+        
+        $_SESSION['post_success'] = "Post created successfully!";
+        header("Location: " . $_SERVER['PHP_SELF']);
+        exit;
+    } else {
+        $_SESSION['post_error'] = "Error creating post: " . $conn->error;
+        header("Location: " . $_SERVER['PHP_SELF']);
+        exit;
     }
+}
+
+// Display any messages
+if (isset($_SESSION['post_success'])) {
+    $post_message = $_SESSION['post_success'];
+    unset($_SESSION['post_success']);
+} elseif (isset($_SESSION['post_error'])) {
+    $post_message = $_SESSION['post_error'];
+    unset($_SESSION['post_error']);
 }
 ?>
 
@@ -263,7 +300,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['post_content'])) {
 
         .privacy-indicator {
             margin-left: 8px;
-            color: var(--accent);
+            color: var(--color-6);
             font-size: 0.9em;
         }
         .privacy-indicator i {
@@ -573,7 +610,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['post_content'])) {
                                                 </a>
                                             </h6>
                                             <p class="post-time">
-                                                <a href="profile.php?username=<?php echo htmlspecialchars($user['username']); ?>" class="text-decoration-none text-muted">
+                                                <a href="profile.php?username=<?php echo htmlspecialchars($user['username']); ?>" class="text-decoration-none text-white" >
                                                     @<?php echo htmlspecialchars($user['username']); ?>
                                                 </a> · <?php echo format_date($post['created_at']); ?>
                                                 <span class="privacy-indicator" title="<?php echo ucfirst($post['visibility']); ?>">
@@ -589,7 +626,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['post_content'])) {
                                         </div>
                                         <?php if ($is_own_profile): ?>
                                             <div class="post-menu ms-auto">
-                                                <button class="menu-trigger" type="button" tabindex="0"><i class="fas fa-ellipsis-h"></i></button>
+                                                <button class="menu-trigger" type="button" tabindex="0"><i class="fas fa-ellipsis-h" style="color: var(--color-6);"></i></button>
                                                 <div class="dropdown-menu">
                                                     <button class="dropdown-item edit-post-btn" data-post-id="<?php echo $post['post_id']; ?>">Edit Post</button>
                                                     <button class="dropdown-item delete-post-btn" data-post-id="<?php echo $post['post_id']; ?>">Delete Post</button>
@@ -599,9 +636,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['post_content'])) {
                                     </div>
                                     
                                     <div class="post-content">
-                                        <p><?php echo nl2br(htmlspecialchars($post['content'])); ?></p>
+                                        <p><?php echo nl2br(html_entity_decode(htmlspecialchars($post['content']))); ?></p>
                                         <?php if ($post['image']): ?>
-                                            <img src="assets/images/<?php echo htmlspecialchars($post['image']); ?>" class="post-image" alt="Post image">
+                                            <img src="assets/images/<?php echo $post['image']; ?>" alt="Post image" class="post-image">
                                         <?php endif; ?>
                                     </div>
                                     
@@ -641,6 +678,42 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['post_content'])) {
                             </div>
                         <?php endforeach; ?>
                     <?php endif; ?>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Post Modal -->
+    <div class="modal fade" id="editPostModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content" style="background-color: var(--card-bg);">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Post</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editPostForm">
+                        <input type="hidden" id="editPostId" name="post_id">
+                        <div class="mb-3">
+                            <textarea class="form-control" id="editPostContent" name="content" rows="4" required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <select class="form-select" id="editPostVisibility" name="visibility">
+                                <option value="public">Public</option>
+                                <option value="friends">Friends Only</option>
+                                <option value="specific">Specific Friends</option>
+                            </select>
+                        </div>
+                        <div id="editFriendSelector" class="friend-selector" style="display: none;">
+                            <div class="selected-friends"></div>
+                            <input type="text" class="friend-search" placeholder="Search friends...">
+                            <div class="friend-list"></div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="saveEditPost">Save Changes</button>
                 </div>
             </div>
         </div>
@@ -849,6 +922,59 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['post_content'])) {
                     this.appendChild(input);
                 }
             });
+        }
+    });
+
+    // Edit Post functionality
+    document.querySelectorAll('.edit-post-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const postId = this.dataset.postId;
+            const postContent = this.closest('.post').querySelector('.post-content p').textContent;
+            const postVisibility = this.closest('.post').querySelector('.privacy-indicator').title.toLowerCase();
+            
+            document.getElementById('editPostId').value = postId;
+            document.getElementById('editPostContent').value = postContent;
+            document.getElementById('editPostVisibility').value = postVisibility;
+            
+            if (postVisibility === 'specific') {
+                document.getElementById('editFriendSelector').style.display = 'block';
+                loadFriendsForEdit(postId);
+            } else {
+                document.getElementById('editFriendSelector').style.display = 'none';
+            }
+            
+            const modal = new bootstrap.Modal(document.getElementById('editPostModal'));
+            modal.show();
+        });
+    });
+
+    // Save edited post
+    document.getElementById('saveEditPost').addEventListener('click', function() {
+        const form = document.getElementById('editPostForm');
+        const formData = new FormData(form);
+        
+        fetch('ajax/update_post.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Failed to update post');
+            }
+        });
+    });
+
+    // Handle visibility change in edit modal
+    document.getElementById('editPostVisibility').addEventListener('change', function() {
+        const friendSelector = document.getElementById('editFriendSelector');
+        if (this.value === 'specific') {
+            friendSelector.style.display = 'block';
+            loadFriendsForEdit(document.getElementById('editPostId').value);
+        } else {
+            friendSelector.style.display = 'none';
         }
     });
     </script>
