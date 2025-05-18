@@ -301,11 +301,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             margin-bottom: 1.5rem;
             color: var(--accent);
         }
-        #hidden-admin-link {
-            cursor: pointer;
-        }
         #hidden-admin-link:hover {
             text-decoration: none !important;
+            cursor: default;
         }
         /* Hide certain elements on small screens */
         @media (max-width: 576px) {

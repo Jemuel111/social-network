@@ -17,7 +17,7 @@ $result = $conn->query($sql);
 ?>
 
 <div class="container mt-4">
-    <h3>Reported Posts</h3>
+    <h3 class="text-white">Reported Posts</h3>
     <?php if ($result->num_rows === 0): ?>
         <div class="alert alert-success">No pending reports.</div>
     <?php else: ?>
